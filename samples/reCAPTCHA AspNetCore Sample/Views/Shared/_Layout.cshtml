@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000">
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik:300,400,500">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,600,700">
+    <link rel="stylesheet" href="~/lib/material-components-web/material-components-web.min.css">
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .mdc-drawer__header {
+            text-align: center;
+        }
+    </style>
+    @RenderSection("Head", required: false)
+</head>
+<body class="mdc-typography">
+    <div class="page-container" style="width:100%">
+        <aside class="mdc-drawer mdc-drawer--modal">
+            <div class="mdc-drawer__header">
+                <div style="padding-top:10px;">
+                    <img class="mdc-image-list__image" src="~/images/recaptcha_48dp.png" style="max-width:48px;" />
+                </div>
+                <div class="mdc-drawer__title">reCAPTCHA</div>
+            </div>
+            <div class="mdc-drawer__content">
+                <nav class="mdc-list">
+                    <hr class="mdc-list-divider">
+                    <h6 class="mdc-list-group__subheader">Samples</h6>
+                    <a class="mdc-list-item @(ViewContext.RouteData.Values["Action"].ToString() == "RecaptchaV2CheckboxDemo" ? "mdc-list-item--activated" : "")" href="~/V2Checkbox" tabindex="-1">
+                        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">check_box</i>V2 Checkbox
+                    </a>
+                    <a class="mdc-list-item @(ViewContext.RouteData.Values["Action"].ToString() == "RecaptchaV3Demo" ? "mdc-list-item--activated" : "")" href="~/V3" tabindex="-1">
+                        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">loop</i>V3
+                    </a>
+                    <hr class="mdc-list-divider">
+                    <a class="mdc-list-item" href="https://github.com/finoaker/reCAPTCHA" tabindex="-1" target="_blank">
+                        <i class="material-icons mdc-list-item__graphic" aria-hidden="true">launch</i>GitHub
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        <div class="mdc-drawer-scrim"></div>
+        <div class="content-container">
+            <header class="mdc-top-app-bar app-bar" id='app-bar'>
+                <div class="mdc-top-app-bar__row">
+                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                        <button class="material-icons mdc-top-app-bar__navigation-icon mdc-ripple-upgraded--unbounded mdc-ripple-upgraded" style="--mdc-ripple-fg-size:28px; --mdc-ripple-fg-scale:1.71429; --mdc-ripple-left:10px; --mdc-ripple-top:10px;">menu</button>
+                        <span class="mdc-top-app-bar__title">reCAPTCHA Samples</span>
+                    </section>
+                </div>
+            </header>
+            <main class="main-content" id="main-content">
+                <div class="mdc-top-app-bar--fixed-adjust">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+    <script type="text/javascript" src="~/lib/material-components-web/material-components-web.js"></script>
+    @*<script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>*@
+
+    <script>
+        const drawer = new mdc.drawer.MDCDrawer(document.querySelector('.mdc-drawer'));
+        const topAppBar = new mdc.topAppBar.MDCTopAppBar(document.getElementById('app-bar'));
+        const mainContent = document.getElementById('main-content');
+
+        topAppBar.setScrollTarget(mainContent);
+        topAppBar.listen('MDCTopAppBar:nav', function () {
+            drawer.open = !drawer.open;
+        });
+
+        //const layout = new LayoutPage(
+        //    document.querySelector('.mdc-drawer'),
+        //    document.getElementById('app-bar'),
+        //    document.getElementById('main-content')
+        //);
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

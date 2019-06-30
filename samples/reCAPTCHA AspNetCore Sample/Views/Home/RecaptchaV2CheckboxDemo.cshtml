@@ -1,0 +1,324 @@
+﻿@using Finoaker.Web.Recaptcha
+@model ContactViewModel
+@addTagHelper *, Finoaker.Web.Recaptcha
+@{
+    ViewData["Title"] = "reCAPTCHA | V2 Checkbox Demo";
+}
+<div class="mdc-layout-grid" style="width:100%;max-width:1200px">
+    <div class="mdc-layout-grid__inner" style="text-align:center">
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12" style="display:inline-block">
+            <h3 class="mdc-typography--headline3">reCAPTCHA v2 Checkbox</h3>
+            <img class="mdc-image-list__image" src="~/images/newCaptchaAnchor.gif" style="max-width:600px;">
+            <p>
+                This sample demos a reCAPTCHA v2 Checkbox verification using a common "Contact us" form. reCAPTCHA is a free service that protects your site from spam and abuse. It uses advanced risk analysis techniques to tell humans and bots apart.
+            </p>
+        </div>
+        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12" style="text-align:left">
+            <div class="mdc-tab-bar" role="tablist">
+                <div class="mdc-tab-scroller">
+                    <div class="mdc-tab-scroller__scroll-area">
+                        <div class="mdc-tab-scroller__scroll-content">
+                            <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0">
+                                <span class="mdc-tab__content">
+                                    <span class="mdc-tab__icon material-icons" aria-hidden="true">code</span>
+                                    <span class="mdc-tab__text-label">Setup</span>
+                                </span>
+                                <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                </span>
+                                <span class="mdc-tab__ripple"></span>
+                            </button>
+                            <button class="mdc-tab" role="tab" aria-selected="true" tabindex="0">
+                                <span class="mdc-tab__content">
+                                    <span class="mdc-tab__icon material-icons" aria-hidden="true">computer</span>
+                                    <span class="mdc-tab__text-label">Demo</span>
+                                </span>
+                                <span class="mdc-tab-indicator">
+                                    <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                                </span>
+                                <span class="mdc-tab__ripple"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-container">
+                <div class="tab-content tab-content--active">
+                    <div>
+                        <span>Setting up the Finoaker reCAPTCHA for ASP.NET follows standard MVC pattern:</span>
+                        <ul>
+                            <li>Add the keys to settings file. Get keys from <a href="https://www.google.com/recaptcha/admin" target="_blank">reCAPTCHA admin console.</a></li>
+                            <li>Add the reCAPTCHA service to the apps ServiceCollection in the Startup class.</li>
+                            <li>Add a property to the model to store response token from the client.</li>
+                            <li>Add the reCAPTCHA TagHelper <b>OR</b> HtmlHelper to the form in your View and bind to model property.</li>
+                            <li>Verify the reCAPTCHA response in the Controller.</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="mdc-typography--headline4">Settings</h3>
+                    <div>Add reCAPTCHA keys to the appSettings.json file (could also use UserSecrets)</div>
+                    <pre style="font-family:Consolas;font-size:13px;color:black;background:white;"><span style="color:#2e75b6;">&quot;RecaptchaSettings&quot;</span>:&nbsp;{
+&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;Keys&quot;</span>:&nbsp;[
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;SecretKey&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe&quot;</span>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;SiteKey&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI&quot;</span>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;KeyType&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;V3&quot;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;},
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;SecretKey&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe&quot;</span>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;SiteKey&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI&quot;</span>,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#2e75b6;">&quot;KeyType&quot;</span>:&nbsp;<span style="color:#a31515;">&quot;V2Checkbox&quot;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;]
+}</pre>
+                    <h3 class="mdc-typography--headline4">Startup</h3>
+                    <div>In the apps <code>Startup</code> class, add the reCAPTCHA service to the service collection, in the <code>ConfigureServices(IServiceCollection services)</code> method. Pass in the RecaptchaSettings section.</div>
+                    <pre style="font-family:Consolas;font-size:13px;color:black;background:white;"><span style="color:green;">//&nbsp;This&nbsp;method&nbsp;gets&nbsp;called&nbsp;by&nbsp;the&nbsp;runtime.&nbsp;Use&nbsp;this&nbsp;method&nbsp;to&nbsp;add&nbsp;services&nbsp;to&nbsp;the&nbsp;container.</span>
+<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">void</span>&nbsp;<span style="color:#74531f;">ConfigureServices</span>(<span style="color:#2b91af;">IServiceCollection</span>&nbsp;<span style="color:#1f377f;">services</span>)
+{
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#1f377f;">services</span>.<span style="color:#74531f;">Configure</span>&lt;<span style="color:#2b91af;">CookiePolicyOptions</span>&gt;(<span style="color:#1f377f;">options</span>&nbsp;=&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">//&nbsp;This&nbsp;lambda&nbsp;determines&nbsp;whether&nbsp;user&nbsp;consent&nbsp;for&nbsp;non-essential&nbsp;cookies&nbsp;is&nbsp;needed&nbsp;for&nbsp;a&nbsp;given&nbsp;request.</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#1f377f;">options</span>.CheckConsentNeeded&nbsp;=&nbsp;<span style="color:#1f377f;">context</span>&nbsp;=&gt;&nbsp;<span style="color:blue;">true</span>;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#1f377f;">options</span>.MinimumSameSitePolicy&nbsp;=&nbsp;<span style="color:#2b91af;">SameSiteMode</span>.None;
+&nbsp;&nbsp;&nbsp;&nbsp;});
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">//&nbsp;Add&nbsp;reCAPTCHA&nbsp;settings.</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#1f377f;">services</span>.<span style="color:#74531f;">AddRecaptcha</span>(Configuration.<span style="color:#74531f;">GetSection</span>(<span style="color:blue;">nameof</span>(<span style="color:#2b91af;">RecaptchaSettings</span>)));
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#1f377f;">services</span>.<span style="color:#74531f;">AddMvc</span>().<span style="color:#74531f;">SetCompatibilityVersion</span>(<span style="color:#2b91af;">CompatibilityVersion</span>.Version_2_2);
+}</pre>
+                    <h3 class="mdc-typography--headline4">Model</h3>
+                    <div>Add a new property to your model to hold the reCAPTCHA response, so it can be posted back for verification.</div>
+                    <pre style="font-family:Consolas;font-size:13px;color:black;background:white;"><span style="color:blue;">public</span>&nbsp;<span style="color:blue;">class</span>&nbsp;<span style="color:#2b91af;">ContactViewModel</span>
+{
+&nbsp;&nbsp;&nbsp;&nbsp;[<span style="color:#2b91af;">DisplayName</span>(<span style="color:#a31515;">&quot;Name&nbsp;(required)&quot;</span>),&nbsp;<span style="color:#2b91af;">Required</span>]
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">string</span>&nbsp;Name&nbsp;{&nbsp;<span style="color:blue;">get</span>;&nbsp;<span style="color:blue;">set</span>;&nbsp;}
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;[<span style="color:#2b91af;">DisplayName</span>(<span style="color:#a31515;">&quot;Email&nbsp;(required)&quot;</span>),&nbsp;<span style="color:#2b91af;">Required</span>,&nbsp;<span style="color:#2b91af;">EmailAddress</span>]
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">string</span>&nbsp;Email&nbsp;{&nbsp;<span style="color:blue;">get</span>;&nbsp;<span style="color:blue;">set</span>;&nbsp;}
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;[<span style="color:#2b91af;">DisplayName</span>(<span style="color:#a31515;">&quot;Phone&quot;</span>),&nbsp;<span style="color:#2b91af;">Phone</span>]
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">string</span>&nbsp;Phone&nbsp;{&nbsp;<span style="color:blue;">get</span>;&nbsp;<span style="color:blue;">set</span>;&nbsp;}
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;[<span style="color:#2b91af;">DisplayName</span>(<span style="color:#a31515;">&quot;Message&nbsp;(required)&quot;</span>),&nbsp;<span style="color:#2b91af;">Required</span>]
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">string</span>&nbsp;Message&nbsp;{&nbsp;<span style="color:blue;">get</span>;&nbsp;<span style="color:blue;">set</span>;&nbsp;}
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;[<span style="color:#2b91af;">Required</span>]
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">public</span>&nbsp;<span style="color:blue;">string</span>&nbsp;RecaptchaResponse&nbsp;{&nbsp;<span style="color:blue;">get</span>;&nbsp;<span style="color:blue;">set</span>;&nbsp;}
+}</pre>
+                    <h3 class="mdc-typography--headline4">View | Render</h3>
+                    <div>Add the Finoaker reCAPTCHA TagHelper OR HtmlHelper to your form. Use the property you added to the model, to store the challenge response.</div>
+                    <pre style="font-family:Consolas;font-size:13px;color:black;background:white;"><span style="background:yellow;">@@</span><span style="color:blue;">using</span>&nbsp;Finoaker.Web.Recaptcha
+<span style="background:yellow;">@@model</span>&nbsp;<span style="color:#2b91af;">ContactViewModel</span>
+<span style="background:yellow;">@@addTagHelper</span>&nbsp;<span style="color:#a31515;">*,&nbsp;Finoaker.Web.Recaptcha</span>
+ 
+<span style="color:blue;">&lt;</span><span style="color:maroon;">!DOCTYPE</span>&nbsp;<span style="color:red;">html</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;</span><span style="color:maroon;">html</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;</span><span style="color:maroon;">head</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">meta</span>&nbsp;<span style="color:red;">name</span><span style="color:blue;">=</span><span style="color:blue;">&quot;viewport&quot;</span>&nbsp;<span style="color:red;">content</span><span style="color:blue;">=</span><span style="color:blue;">&quot;width=device-width&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">title</span><span style="color:blue;">&gt;</span>RecaptchaDemo<span style="color:blue;">&lt;/</span><span style="color:maroon;">title</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;/</span><span style="color:maroon;">head</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;</span><span style="color:maroon;">body</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">h1</span><span style="color:blue;">&gt;</span>Contact&nbsp;Us<span style="color:blue;">&lt;/</span><span style="color:maroon;">h1</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">form</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-controller</span><span style="color:blue;">=</span><span style="color:blue;">&quot;Home&quot;</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-action</span><span style="color:blue;">=</span><span style="color:blue;">&quot;RecaptchaV2CheckboxDemo&quot;</span>&nbsp;<span style="color:red;">method</span><span style="color:blue;">=</span><span style="color:blue;">&quot;post&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background:yellow;">@@</span>Html.<span style="color:#74531f;">AntiForgeryToken</span>()
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">label</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Name<span style="color:blue;">&quot;</span><span style="color:blue;">&gt;&lt;/</span><span style="font-weight:bold;color:purple;">label</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">input</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Name<span style="color:blue;">&quot;</span>&nbsp;<span style="font-weight:bold;color:purple;">type</span><span style="color:blue;">=</span><span style="color:blue;">&quot;text&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">label</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Email<span style="color:blue;">&quot;</span><span style="color:blue;">&gt;&lt;/</span><span style="font-weight:bold;color:purple;">label</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">input</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Email<span style="color:blue;">&quot;</span>&nbsp;<span style="font-weight:bold;color:purple;">type</span><span style="color:blue;">=</span><span style="color:blue;">&quot;email&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">label</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Phone<span style="color:blue;">&quot;</span><span style="color:blue;">&gt;&lt;/</span><span style="font-weight:bold;color:purple;">label</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">input</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Phone<span style="color:blue;">&quot;</span>&nbsp;<span style="font-weight:bold;color:purple;">type</span><span style="color:blue;">=</span><span style="color:blue;">&quot;tel&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">label</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Message<span style="color:blue;">&quot;</span><span style="color:blue;">&gt;&lt;/</span><span style="font-weight:bold;color:purple;">label</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">input</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>Message<span style="color:blue;">&quot;</span>&nbsp;<span style="font-weight:bold;color:purple;">type</span><span style="color:blue;">=</span><span style="color:blue;">&quot;tel&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:darkgreen;">&lt;!--&nbsp;Use&nbsp;either&nbsp;the&nbsp;TagHelper&nbsp;reCAPTCHA&nbsp;version...&nbsp;--&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="font-weight:bold;color:purple;">recaptcha-v2-checkbox</span>&nbsp;<span style="font-weight:bold;color:purple;">asp-for</span><span style="color:blue;">=</span><span style="color:blue;">&quot;</span>RecaptchaResponse<span style="color:blue;">&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:darkgreen;">&lt;!--&nbsp;...OR&nbsp;the&nbsp;HtmlHelper&nbsp;reCAPTCHA&nbsp;version&nbsp;--&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background:yellow;">@@</span>Html.<span style="color:#74531f;">RecaptchaV2CheckboxFor</span>(<span style="color:#1f377f;">m</span>&nbsp;=&gt;&nbsp;<span style="color:#1f377f;">m</span>.RecaptchaResponse)
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">div</span>&nbsp;<span style="color:red;">class</span><span style="color:blue;">=</span><span style="color:blue;">&quot;form-field-container&quot;</span><span style="color:blue;">&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;</span><span style="color:maroon;">input</span>&nbsp;<span style="color:red;">type</span><span style="color:blue;">=</span><span style="color:blue;">&quot;submit&quot;</span>&nbsp;<span style="color:blue;">/&gt;</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="color:maroon;">div</span><span style="color:blue;">&gt;</span>
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">&lt;/</span><span style="font-weight:bold;color:purple;">form</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;/</span><span style="color:maroon;">body</span><span style="color:blue;">&gt;</span>
+<span style="color:blue;">&lt;/</span><span style="color:maroon;">html</span><span style="color:blue;">&gt;</span>
+</pre>
+                    <h3 class="mdc-typography--headline4">Controller | Verify</h3>
+                    <div>In your controller action, add the Model and Recaptcha services as parameters. Check model state as normal, then call the verification service. Check the results for verifcation success.</div>
+                    <pre style="font-family:Consolas;font-size:13px;color:black;background:white;">[<span style="color:#2b91af;">HttpGet</span>]
+<span style="color:blue;">public</span>&nbsp;<span style="color:#2b91af;">IActionResult</span>&nbsp;<span style="color:#74531f;">RecaptchaV2CheckboxDemo</span>()
+{
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#8f08c4;">return</span>&nbsp;<span style="color:#74531f;">View</span>();
+}
+ 
+[<span style="color:#2b91af;">HttpPost</span>,&nbsp;<span style="color:#2b91af;">ValidateAntiForgeryToken</span>]
+<span style="color:blue;">public</span>&nbsp;<span style="color:#2b91af;">IActionResult</span>&nbsp;<span style="color:#74531f;">RecaptchaV2CheckboxDemo</span>(<span style="color:#2b91af;">ContactViewModel</span>&nbsp;<span style="color:#1f377f;">model</span>,&nbsp;[<span style="color:#2b91af;">FromServices</span>]&nbsp;<span style="color:#2b91af;">IRecaptchaService</span>&nbsp;<span style="color:#1f377f;">recaptchaService</span>)
+{
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">//&nbsp;check&nbsp;model&nbsp;state&nbsp;first&nbsp;to&nbsp;confirm&nbsp;all&nbsp;properties,&nbsp;including&nbsp;reCAPTCHA,&nbsp;are&nbsp;valid.</span>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#8f08c4;">if</span>&nbsp;(ModelState.IsValid)
+&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">//&nbsp;verify&nbsp;the&nbsp;reCAPCTHA&nbsp;response&nbsp;against&nbsp;verification&nbsp;service</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:blue;">var</span>&nbsp;<span style="color:#1f377f;">verifyResult</span>&nbsp;=&nbsp;<span style="color:#1f377f;">recaptchaService</span>.<span style="color:#74531f;">VerifyAsync</span>(<span style="color:#1f377f;">model</span>.RecaptchaResponse,&nbsp;<span style="color:#2b91af;">RecaptchaType</span>.V2Checkbox).Result;
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">//&nbsp;check&nbsp;success&nbsp;status</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#8f08c4;">if</span>&nbsp;(<span style="color:#1f377f;">verifyResult</span>.Success)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">...</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;}
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#8f08c4;">return</span>&nbsp;<span style="color:#74531f;">View</span>();
+}</pre>
+                </div>
+                <div class="tab-content">
+                    <div>
+                        <div class="form-container">
+                            <h2>Contact us</h2>
+                            <form asp-controller="Home" asp-action="RecaptchaV2CheckboxDemo" method="post">
+                                <div class="field-container">
+                                    <div class="mdc-text-field mdc-text-field--outlined form-field">
+                                        <input asp-for="Name" class="mdc-text-field__input">
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch">
+                                                <label asp-for="Name" class="mdc-floating-label"></label>
+                                            </div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%;">
+                                        <input asp-for="Email" class="mdc-text-field__input">
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch">
+                                                <label asp-for="Email" class="mdc-floating-label"></label>
+                                            </div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <div class="mdc-text-field mdc-text-field--outlined" style="width: 100%;">
+                                        <input asp-for="Phone" class="mdc-text-field__input">
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch">
+                                                <label asp-for="Phone" class="mdc-floating-label"></label>
+                                            </div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <div class="mdc-text-field mdc-text-field--textarea mdc-text-field--fullwidth">
+                                        <textarea asp-for="Message" class="mdc-text-field__input" rows="5"></textarea>
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch">
+                                                <label asp-for="Message" class="mdc-floating-label"></label>
+                                            </div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field-container">
+                                    <recaptcha-v2-checkbox asp-for="RecaptchaResponse" callback="onSuccess" />
+                                </div>
+                                <div class="field-container">
+                                    <input disabled
+                                           type="submit"
+                                           class="mdc-button mdc-button--raised"
+                                           value="Send"
+                                           id="submit-button" />
+                                    <button disabled
+                                            class="mdc-button"
+                                            id="view-button">
+                                        Show reCAPTCHA Token
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="token-container">
+                                <div class="field-container">
+                                    <div class="mdc-text-field mdc-text-field--textarea mdc-text-field--fullwidth">
+                                        <textarea class="mdc-text-field__input" rows="4" id="token-text" disabled></textarea>
+                                        <div class="mdc-notched-outline">
+                                            <div class="mdc-notched-outline__leading"></div>
+                                            <div class="mdc-notched-outline__notch"></div>
+                                            <div class="mdc-notched-outline__trailing"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Head {
+    <link rel="stylesheet" href="~/css/site.css">
+}
+
+@section Scripts {
+    <script>
+        const tabBar = new mdc.tabBar.MDCTabBar(document.querySelector('.mdc-tab-bar'));
+        const panels = document.querySelectorAll('.tab-content');
+        const view = document.getElementById('view-button');
+        view.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleTokenContainer();
+        });
+
+        document.querySelectorAll('.mdc-text-field').forEach(el => mdc.textField.MDCTextField.attachTo(el));
+
+        tabBar.listen('MDCTabBar:activated', e => {
+            for (var i = 0; i < panels.length; i++) {
+                if (i == e.detail.index) {
+                    panels.item(i).classList.add('tab-content--active');
+                } else {
+                    panels.item(i).classList.remove('tab-content--active');
+                }
+            }
+        });
+
+        function onSuccess(token) {
+            document.getElementById('submit-button').attributes.removeNamedItem('disabled');
+            document.getElementById('token-text').value = token;
+            document.getElementById('view-button').attributes.removeNamedItem('disabled');
+        }
+
+        function toggleTokenContainer() {
+            const section = document.querySelector('.token-container');
+
+            if (section.classList.contains("token-container--visible")) {
+                section.classList.remove("token-container--visible");
+                view.textContent = "Show reCAPTCHA Token";
+            } else {
+                section.classList.add("token-container--visible");
+                view.textContent = "Hide reCAPTCHA Token";
+            }
+        }
+    </script>
+}

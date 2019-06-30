@@ -9,6 +9,7 @@ reCAPTCHA is a free service that protects your website from spam and abuse. reCA
 For more information visit the reCAPTCHA site: https://www.google.com/recaptcha
 
 ## Get Started
+Check out the DEMO first to see reCAPTCHA in action and for detailed examples: https://finoaker-recaptcha.azurewebsites.net/
 
 ### Installation
 ```

@@ -9,7 +9,7 @@
     <Authors>Ant Croaker</Authors>
     <Company>Finoaker</Company>
     <Copyright>© Finoaker. All rights reserved.</Copyright>
-    <PackageTags>aspnetcore taghelper htmlhelper recaptcha netstandard20</PackageTags>
+    <PackageTags>aspnetcore taghelper htmlhelper recaptcha netstandard20 mvc</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>A simple to use .NET Standard 2.0 library for adding reCAPTCHA widgets to ASP.NET websites. reCAPTCHA is a free service that protects sites from spam and abuse.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>

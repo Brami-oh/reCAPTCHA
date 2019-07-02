@@ -10,7 +10,7 @@ namespace Finoaker.Web.Recaptcha
     public static partial class HtmlHelperExtensions
     {
         internal const string RecaptchaV3ApiScript = "<script src=\"https://www.google.com/recaptcha/api.js?render={0}\" type=\"text/javascript\"></script>";
-        internal const string EmbeddedV3ScriptFilename = "scripts/dist/RecaptchaV3.min.js";
+        internal const string EmbeddedV3ScriptFilename = "Scripts/dist/RecaptchaV3.min.js";
         internal const string HiddenInputV3CssClass = "recaptcha-v3-response";
         internal const string ContainerV3CssClass = "recaptcha-v3-container";
 

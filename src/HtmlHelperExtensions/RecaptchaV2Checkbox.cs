@@ -10,7 +10,7 @@ namespace Finoaker.Web.Recaptcha
     public static partial class HtmlHelperExtensions
     {
         internal const string RecaptchaV2ApiScript = "<script src=\"https://www.google.com/recaptcha/api.js\" type=\"text/javascript\" async defer></script>";
-        internal const string EmbeddedV2ScriptFileName = "scripts/dist/RecaptchaV2Checkbox.min.js";
+        internal const string EmbeddedV2ScriptFileName = "Scripts/dist/RecaptchaV2Checkbox.min.js";
         internal const string HiddenInputV2CssClass = "recaptcha-v2-response";
         internal const string ContainerV2CssClass = "recaptcha-v2-container";
 

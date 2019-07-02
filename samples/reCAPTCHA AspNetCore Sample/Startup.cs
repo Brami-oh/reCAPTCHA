@@ -32,7 +32,7 @@ namespace reCAPTCHA_AspNetCore_Sample
             });
 
             // Add reCAPTCHA settings.
-            services.AddRecaptcha(Configuration.GetSection(nameof(RecaptchaSettings)));
+            services.Configure<RecaptchaSettings>(Configuration.GetSection(nameof(RecaptchaSettings)));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

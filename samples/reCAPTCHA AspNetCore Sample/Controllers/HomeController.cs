@@ -1,16 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using reCAPTCHA_AspNetCore_Sample.Models;
 using Finoaker.Web.Recaptcha;
+using Microsoft.Extensions.Options;
 
 namespace reCAPTCHA_AspNetCore_Sample.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly RecaptchaSettings _settings;
+        public HomeController(IOptions<RecaptchaSettings> settings)
+        {
+            _settings = settings.Value;
+        }
+
         [Route("~/")]
         public IActionResult Index()
         {
@@ -24,13 +27,13 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
         }
 
         [Route("~/V2Checkbox"), HttpPost]
-        public IActionResult RecaptchaV2CheckboxDemo(ContactViewModel model, [FromServices] IRecaptchaService recaptchaService)
+        public IActionResult RecaptchaV2CheckboxDemo(ContactViewModel model)
         {
             // check model state first to confirm all properties, including reCAPTCHA, are valid.
             if (ModelState.IsValid)
             {
                 // verify the reCAPCTHA response against verification service
-                var verifyResult = recaptchaService.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V2Checkbox).Result;
+                var verifyResult = Helpers.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V2Checkbox, _settings).Result;
 
                 ViewBag.Result = "Failed!";
 
@@ -50,7 +53,7 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
         }
 
         [Route("~/V3"), HttpPost]
-        public IActionResult RecaptchaV3Demo(ContactViewModel model, [FromServices] IRecaptchaService recaptchaService)
+        public IActionResult RecaptchaV3Demo(ContactViewModel model)
         {
             // check model state first to confirm all properties, including reCAPTCHA, are valid.
             if (ModelState.IsValid)
@@ -58,7 +61,7 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
                 var myMinimumScore = 0.8m;
 
                 // verify the reCAPCTHA response against verification service
-                var verifyResult = recaptchaService.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V3).Result;
+                var verifyResult = Helpers.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V3, _settings).Result;
 
                 ViewBag.Result = "Failed!";
 

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Runtime.Serialization.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,7 +17,7 @@ namespace Finoaker.Web.Recaptcha
             return ((IOptions<RecaptchaSettings>)services.GetService(typeof(IOptions<RecaptchaSettings>))).Value;
         }
 
-        public const string RecaptchaVerifyUrl = "https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}&remoteip={2}";
+        public const string VerifyUrl = "https://www.google.com/recaptcha/api/siteverify?secret={0}&response={1}&remoteip={2}";
 
         public static async Task<VerifyResponse> VerifyAsync(string responseToken, RecaptchaType type, RecaptchaSettings settings, IPAddress remoteIp = null)
         {
@@ -32,7 +31,7 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException("SecretKey");
             }
 
-            var url = string.Format(RecaptchaVerifyUrl, settings.First(type).SecretKey, responseToken, remoteIp);
+            var url = string.Format(VerifyUrl, settings.First(type).SecretKey, responseToken, remoteIp);
 
             var result = await new HttpClient().GetStreamAsync(url);
 

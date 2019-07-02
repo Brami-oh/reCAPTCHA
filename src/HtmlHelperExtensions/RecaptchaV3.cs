@@ -32,7 +32,7 @@ namespace Finoaker.Web.Recaptcha
         public static IHtmlContent RecaptchaV3For<TModel, TResult>(
             this IHtmlHelper<TModel> htmlHelper,
             Expression<Func<TModel, TResult>> expression,
-            string siteKey = null,
+            string siteKey,
             string callback = null,
             string action = null,
             bool isBadgeVisible = true)
@@ -42,13 +42,17 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(htmlHelper));
             }
 
+            if (string.IsNullOrEmpty(siteKey))
+            {
+                throw new ArgumentNullException(nameof(siteKey));
+            }
+
             var hiddenInputTag = (TagBuilder)htmlHelper.HiddenFor(expression, htmlAttributes: null);
 
             var container = new TagBuilder("div");
             container.AddCssClass(ContainerV3CssClass);
 
             container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                options: Helpers.GetOptions(htmlHelper.ViewContext),
                 viewContext: htmlHelper.ViewContext,
                 hiddenInputTag: hiddenInputTag,
                 siteKey: siteKey,
@@ -71,8 +75,8 @@ namespace Finoaker.Web.Recaptcha
         /// <returns>A new <see cref="IHtmlContent"/> containing all Html elements & scripts required to render and execute reCAPTCHA component.</returns>
         public static IHtmlContent RecaptchaV3(
             this IHtmlHelper htmlHelper,
+            string siteKey,
             string expression = null,
-            string siteKey = null,
             string callback = null,
             string action = null,
             bool isBadgeVisible = true)
@@ -82,13 +86,17 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(htmlHelper));
             }
 
+            if (string.IsNullOrEmpty(siteKey))
+            {
+                throw new ArgumentNullException(nameof(siteKey));
+            }
+
             var hiddenInputTag = (TagBuilder)htmlHelper.Hidden(expression ?? "recaptcha-v3--g-recaptcha");
 
             var container = new TagBuilder("div");
             container.AddCssClass(ContainerV3CssClass);
 
             container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                options: Helpers.GetOptions(htmlHelper.ViewContext),
                 viewContext: htmlHelper.ViewContext,
                 hiddenInputTag: hiddenInputTag,
                 siteKey: siteKey,
@@ -102,18 +110,11 @@ namespace Finoaker.Web.Recaptcha
         internal static IHtmlContent GenerateHtmlContent(
             ViewContext viewContext,
             TagBuilder hiddenInputTag,
-            RecaptchaSettings options,
             string siteKey,
             string callback,
             string action,
             bool isBadgeVisible)
         {
-            if (string.IsNullOrEmpty(siteKey))
-            {
-                // if the site key is not provided then get it from settings.
-                siteKey = options.First(RecaptchaType.V3)?.SiteKey ?? throw new ArgumentNullException(nameof(siteKey));
-            }
-
             if (string.IsNullOrEmpty(action))
             {
                 // If action attribute not assigned, use Action property of ViewBag otherwise use controller action name.

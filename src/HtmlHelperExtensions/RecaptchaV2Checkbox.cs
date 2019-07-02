@@ -21,7 +21,7 @@ namespace Finoaker.Web.Recaptcha
         public static IHtmlContent RecaptchaV2CheckboxFor<TModel, TResult>(
             this IHtmlHelper<TModel> htmlHelper,
             Expression<Func<TModel, TResult>> expression,
-            string siteKey = null,
+            string siteKey,
             Theme? theme = null,
             Size? size = null,
             int? tabIndex = null,
@@ -34,13 +34,17 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(htmlHelper));
             }
 
+            if (string.IsNullOrEmpty(siteKey))
+            {
+                throw new ArgumentNullException(nameof(siteKey));
+            }
+
             var hiddenInputTag = (TagBuilder)htmlHelper.HiddenFor(expression, htmlAttributes: null);
 
             var container = new TagBuilder("div");
             container.AddCssClass(ContainerV2CssClass);
 
             container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                Helpers.GetOptions(htmlHelper.ViewContext),
                 hiddenInputTag: hiddenInputTag,
                 siteKey: siteKey,
                 theme: theme,
@@ -56,8 +60,8 @@ namespace Finoaker.Web.Recaptcha
 
         public static IHtmlContent RecaptchaV2Checkbox(
             this IHtmlHelper htmlHelper,
+            string siteKey,
             string expression = null,
-            string siteKey = null,
             Theme? theme = null,
             Size? size = null,
             int? tabIndex = null,
@@ -70,13 +74,16 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(htmlHelper));
             }
 
+            if (string.IsNullOrEmpty(siteKey))
+            {
+                throw new ArgumentNullException(nameof(siteKey));
+            }
             var hiddenInputTag = (TagBuilder)htmlHelper.Hidden(expression ?? "recaptcha-v2--g-recaptcha");
 
             var container = new TagBuilder("div");
             container.AddCssClass(ContainerV2CssClass);
 
             container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                Helpers.GetOptions(htmlHelper.ViewContext),
                 hiddenInputTag: hiddenInputTag,
                 siteKey: siteKey,
                 theme: theme,
@@ -91,7 +98,6 @@ namespace Finoaker.Web.Recaptcha
         }
 
         internal static IHtmlContent GenerateHtmlContent(
-            RecaptchaSettings options,
             TagBuilder hiddenInputTag,
             string siteKey,
             Theme? theme,
@@ -101,12 +107,6 @@ namespace Finoaker.Web.Recaptcha
             string expiredCallback,
             string errorCallback)
         {
-            // if the site key is not provided then get it from settings.
-            if (string.IsNullOrEmpty(siteKey))
-            {
-                siteKey = options.First(RecaptchaType.V2Checkbox)?.SiteKey ?? throw new ArgumentNullException(nameof(siteKey));
-            }
-
             hiddenInputTag.AddCssClass(HiddenInputV2CssClass);
 
             var htmlContentBuilder = new HtmlContentBuilder();

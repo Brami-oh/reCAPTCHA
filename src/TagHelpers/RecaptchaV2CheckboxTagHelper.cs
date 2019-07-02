@@ -20,7 +20,7 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
 
         public RecaptchaV2CheckboxTagHelper(IOptions<RecaptchaSettings> settings, IHtmlGenerator generator)
         {
-            _settings = settings.Value;
+            _settings = settings?.Value;
             _generator = generator;
         }
 
@@ -34,7 +34,18 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         /// Your site key. Required if the site key is not in provided through appSettings.
         /// </summary>
         [HtmlAttributeName("sitekey")]
-        public string SiteKey { get; set; }
+        public string SiteKey
+        {
+            get
+            {
+                return _siteKey ?? _settings?.First(RecaptchaType.V2Checkbox)?.SiteKey;
+            }
+            set
+            {
+                _siteKey = value;
+            }
+        }
+        private string _siteKey;
 
         /// <summary>
         /// The color theme of the widget.
@@ -91,6 +102,11 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
+            if (string.IsNullOrEmpty(SiteKey))
+            {
+                throw new ArgumentNullException(nameof(SiteKey));
+            }
+
             output.Reinitialize("div", TagMode.StartTagAndEndTag);
             output.Attributes.SetAttribute("class", HtmlHelperExtensions.ContainerV2CssClass);
 
@@ -103,7 +119,6 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
                 null);
 
             output.Content.AppendHtml(HtmlHelperExtensions.GenerateHtmlContent(
-                Helpers.GetOptions(ViewContext),
                 hiddenInputTag: hiddenInputTag,
                 siteKey: SiteKey,
                 theme: Theme,

@@ -18,7 +18,7 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
 
         public RecaptchaV3TagHelper(IOptions<RecaptchaSettings> settings, IHtmlGenerator generator)
         {
-            _settings = settings.Value;
+            _settings = settings?.Value;
             _generator = generator;
         }
 
@@ -32,7 +32,18 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         /// Your site key. Required if the site key is not in your appSettings.
         /// </summary>
         [HtmlAttributeName("sitekey")]
-        public string SiteKey { get; set; }
+        public string SiteKey
+        {
+            get
+            {
+                return _siteKey ?? _settings?.First(RecaptchaType.V3)?.SiteKey;
+            }
+            set
+            {
+                _siteKey = value;
+            }
+        }
+        private string _siteKey;
 
         /// <summary>
         /// The name of your callback function, executed when the user submits a successful response. The response token is passed to this callback.
@@ -71,6 +82,11 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
+            if (string.IsNullOrEmpty(SiteKey))
+            {
+                throw new ArgumentNullException(nameof(SiteKey));
+            }
+
             var hiddenInputTag = _generator.GenerateHidden(
                 ViewContext, 
                 Expression?.ModelExplorer, 
@@ -84,7 +100,6 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
 
             output.Content.AppendHtml(
                 HtmlHelperExtensions.GenerateHtmlContent(
-                options: _settings,
                 viewContext: ViewContext,
                 hiddenInputTag: hiddenInputTag,
                 siteKey: SiteKey,

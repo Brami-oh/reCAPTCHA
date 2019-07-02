@@ -250,13 +250,19 @@
                                            class="mdc-button mdc-button--raised"
                                            value="Send"
                                            id="submit-button" />
-                                    <button disabled
-                                            class="mdc-button"
-                                            id="view-button">
-                                        Show reCAPTCHA Token
-                                    </button>
                                 </div>
                             </form>
+                            <div class="field-container">
+                                <label for="basic-switch">reCAPTCHA Token&nbsp;&nbsp;</label>
+                                <div class="mdc-switch">
+                                    <div class="mdc-switch__track"></div>
+                                    <div class="mdc-switch__thumb-underlay">
+                                        <div class="mdc-switch__thumb">
+                                            <input type="checkbox" id="basic-switch" class="mdc-switch__native-control" role="switch">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="token-container">
                                 <div class="field-container">
                                     <div class="mdc-text-field mdc-text-field--textarea mdc-text-field--fullwidth">
@@ -282,43 +288,31 @@
 }
 
 @section Scripts {
+    <script src="~/js/site.js" type="text/javascript"></script>
     <script>
         const tabBar = new mdc.tabBar.MDCTabBar(document.querySelector('.mdc-tab-bar'));
-        const panels = document.querySelectorAll('.tab-content');
-        const view = document.getElementById('view-button');
-        view.addEventListener('click', function (e) {
+        //const panels = document.querySelectorAll('.tab-content');
+        const tokenContainer = document.querySelector('.token-container');
+
+        const switchControl = new mdc.switchControl.MDCSwitch(document.querySelector('.mdc-switch'));
+        switchControl.disabled = true;
+        document.getElementById('basic-switch').addEventListener('change', function (e) {
             e.preventDefault();
-            toggleTokenContainer();
+            toggleTokenContainer(tokenContainer);
         });
 
         document.querySelectorAll('.mdc-text-field').forEach(el => mdc.textField.MDCTextField.attachTo(el));
 
-        tabBar.listen('MDCTabBar:activated', e => {
-            for (var i = 0; i < panels.length; i++) {
-                if (i == e.detail.index) {
-                    panels.item(i).classList.add('tab-content--active');
-                } else {
-                    panels.item(i).classList.remove('tab-content--active');
-                }
-            }
+        tabBar.listen('MDCTabBar:activated', function (e) {
+            tabActivation(e, document.querySelectorAll('.tab-content'));
         });
 
         function onSuccess(token) {
-            document.getElementById('submit-button').attributes.removeNamedItem('disabled');
-            document.getElementById('token-text').value = token;
-            document.getElementById('view-button').attributes.removeNamedItem('disabled');
-        }
-
-        function toggleTokenContainer() {
-            const section = document.querySelector('.token-container');
-
-            if (section.classList.contains("token-container--visible")) {
-                section.classList.remove("token-container--visible");
-                view.textContent = "Show reCAPTCHA Token";
-            } else {
-                section.classList.add("token-container--visible");
-                view.textContent = "Hide reCAPTCHA Token";
-            }
+            responseSuccess(
+                token,
+                document.getElementById('submit-button'),
+                document.getElementById('token-text'),
+                switchControl);
         }
     </script>
 }

@@ -2,6 +2,9 @@
 
 namespace Finoaker.Web.Recaptcha
 {
+    /// <summary>
+    /// The type of reCAPTCHA component.
+    /// </summary>
     public enum RecaptchaType
     {
         /// <summary>

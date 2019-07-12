@@ -18,6 +18,11 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         private IHtmlGenerator _generator;
         private RecaptchaSettings _settings;
 
+        /// <summary>
+        /// Constructor for <see cref="RecaptchaV2CheckboxTagHelper"/>.
+        /// </summary>
+        /// <param name="settings"><see cref="RecaptchaSettings"/> object that has reCAPTCHA keys from configuration.</param>
+        /// <param name="generator"><see cref="IHtmlGenerator"/> used to assist in generating Html content.</param>
         public RecaptchaV2CheckboxTagHelper(IOptions<RecaptchaSettings> settings, IHtmlGenerator generator)
         {
             _settings = settings?.Value;
@@ -90,6 +95,11 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
+        /// <summary>
+        /// Synchronously executes the <see cref="RecaptchaV2CheckboxTagHelper"/> with the given context and output.
+        /// </summary>
+        /// <param name="context">Contains information associated with the current HTML tag.</param>
+        /// <param name="output">A stateful HTML element used to generate an HTML tag.</param>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             if (context is null)

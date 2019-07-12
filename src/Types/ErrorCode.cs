@@ -8,6 +8,9 @@ namespace Finoaker.Web.Recaptcha
     [Flags]
     public enum ErrorCode
     {
+        /// <summary>
+        /// No errors.
+        /// </summary>
         None = 0,
 
         /// <summary>
@@ -19,6 +22,9 @@ namespace Finoaker.Web.Recaptcha
         /// The secret parameter is invalid or malformed.
         /// </summary>
         InvalidInputSecret = 2,
+        /// <summary>
+        /// The secret parameter is invalid or malformed.
+        /// </summary>
         InvalidKeys = InvalidInputSecret,
 
         /// <summary>

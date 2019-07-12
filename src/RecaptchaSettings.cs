@@ -5,9 +5,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Finoaker.Web.Recaptcha
 {
+    /// <summary>
+    /// Contains reCAPTCHA settings from configuration.
+    /// </summary>
     [Serializable]
     public class RecaptchaSettings
     {
+        /// <summary>
+        /// <see cref="List{Key}"/> of keys for the various reCAPTCHA types. Keys can be obtained from reCAPTCHA admin console.
+        /// </summary>
         [Required]
         public List<Key> Keys { get; set; }
 
@@ -19,6 +25,10 @@ namespace Finoaker.Web.Recaptcha
             return Keys?.FirstOrDefault(key => key.KeyType == type);
         }
     }
+
+    /// <summary>
+    /// Contains site and secret keys of a specific <see cref="RecaptchaType"/>
+    /// </summary>
     [Serializable]
     public class Key
     {
@@ -35,9 +45,9 @@ namespace Finoaker.Web.Recaptcha
         [StringLength(40, MinimumLength = 40)]
         public string SiteKey { get; set; }
 
-        ///// <summary>
-        ///// Type of reCAPTCHA service the keys can be used with (eg. v2 checkbox)
-        ///// </summary>
+        /// <summary>
+        /// Type of reCAPTCHA service the keys can be used with (eg. v2 checkbox)
+        /// </summary>
         [Required]
         public RecaptchaType KeyType { get; set; }
     }

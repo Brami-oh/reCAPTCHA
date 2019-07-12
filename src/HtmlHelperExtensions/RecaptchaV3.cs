@@ -27,8 +27,8 @@ namespace Finoaker.Web.Recaptcha
         /// <param name="siteKey">Your reCAPTCHA sitekey. Get from the admin console.</param>
         /// <param name="callback">The name of your Javascript callback function, executed when the user submits a successful response. Response token will be passed to this function.</param>
         /// <param name="action">A name used to provide a detailed break-down of data for your top ten actions in the admin console.</param>
-        /// <param name="hideBadge">Indicates if the reCAPTCHA badge is visible. NOTE: You are allowed to hide the badge as long as you include the reCAPTCHA branding visibly in the user flow of the page.</param>
-        /// <returns>A new <see cref="IHtmlContent"/> containing all Html elements & scripts required to render and execute reCAPTCHA component.</returns>
+        /// <param name="isBadgeVisible">Indicates if the reCAPTCHA badge is visible. NOTE: You are allowed to hide the badge as long as you include the reCAPTCHA branding visibly in the user flow of the page.</param>
+        /// <returns>A new <see cref="IHtmlContent"/> containing all Html elements and scripts required to render and execute reCAPTCHA component.</returns>
         public static IHtmlContent RecaptchaV3For<TModel, TResult>(
             this IHtmlHelper<TModel> htmlHelper,
             Expression<Func<TModel, TResult>> expression,
@@ -71,8 +71,8 @@ namespace Finoaker.Web.Recaptcha
         /// <param name="siteKey">Your reCAPTCHA sitekey. Get from the admin console.</param>
         /// <param name="callback">The name of your Javascript callback function, executed when the user submits a successful response. Response token will be passed to this function.</param>
         /// <param name="action">A name used to provide a detailed break-down of data for your top ten actions in the admin console.</param>
-        /// <param name="hideBadge">Indicates if the reCAPTCHA badge is visible. NOTE: You are allowed to hide the badge as long as you include the reCAPTCHA branding visibly in the user flow of the page.</param>
-        /// <returns>A new <see cref="IHtmlContent"/> containing all Html elements & scripts required to render and execute reCAPTCHA component.</returns>
+        /// <param name="isBadgeVisible">Indicates if the reCAPTCHA badge is visible. NOTE: You are allowed to hide the badge as long as you include the reCAPTCHA branding visibly in the user flow of the page.</param>
+        /// <returns>A new <see cref="IHtmlContent"/> containing all Html elements and scripts required to render and execute reCAPTCHA component.</returns>
         public static IHtmlContent RecaptchaV3(
             this IHtmlHelper htmlHelper,
             string siteKey,

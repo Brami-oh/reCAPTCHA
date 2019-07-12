@@ -19,6 +19,10 @@
     <PackageIconUrl>https://www.gstatic.com/images/icons/material/product/2x/recaptcha_48dp.png</PackageIconUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\antho\Documents\Dev\Finoaker.Web\src\Finoaker.Web.Recaptcha.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="node_modules\**" />
     <None Include="LICENSE.txt">

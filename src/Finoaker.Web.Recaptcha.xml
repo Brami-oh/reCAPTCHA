@@ -4,6 +4,43 @@
         <name>Finoaker.Web.Recaptcha</name>
     </assembly>
     <members>
+        <member name="T:Finoaker.Web.Recaptcha.HtmlHelperExtensions">
+            <summary>
+            <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> implementations for creating reCAPTCHA components.
+            </summary>
+        </member>
+        <member name="M:Finoaker.Web.Recaptcha.HtmlHelperExtensions.RecaptchaV2CheckboxFor``2(Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper{``0},System.Linq.Expressions.Expression{System.Func{``0,``1}},System.String,System.Nullable{Finoaker.Web.Recaptcha.Theme},System.Nullable{Finoaker.Web.Recaptcha.Size},System.Nullable{System.Int32},System.String,System.String,System.String)">
+            <summary>
+            <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> implementation for creating a reCAPTCHA V2 Checkbox style component and binding the response to a model property.
+            </summary>
+            <typeparam name="TModel">The type of the model.</typeparam>
+            <typeparam name="TResult">The type of the <paramref name="expression"/> result</typeparam>
+            <param name="htmlHelper">The <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> instance this method extends.</param>
+            <param name="expression">An expression to be evaluated against the current model.</param>
+            <param name="siteKey">Your reCAPTCHA sitekey. Get from the admin console.</param>
+            <param name="theme">The color theme of the widget.</param>
+            <param name="size">The size of the widget.</param>
+            <param name="tabIndex">The tabindex of the widget and challenge. If other elements in your page use tabindex, it should be set to make user navigation easier.</param>
+            <param name="callback">The name of your Javascript callback function, executed when the user submits a successful response. Response token will be passed to this function.</param>
+            <param name="expiredCallback">The name of your callback function, executed when the reCAPTCHA response expires and the user needs to re-verify.</param>
+            <param name="errorCallback">The name of your callback function, executed when reCAPTCHA encounters an error (usually network connectivity) and cannot continue until connectivity is restored. If you specify a function here, you are responsible for informing the user that they should retry.</param>
+            <returns>Html and script content to render and execute the reCAPTCHA V2 Checkbox.</returns>
+        </member>
+        <member name="M:Finoaker.Web.Recaptcha.HtmlHelperExtensions.RecaptchaV2Checkbox(Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper,System.String,System.String,System.Nullable{Finoaker.Web.Recaptcha.Theme},System.Nullable{Finoaker.Web.Recaptcha.Size},System.Nullable{System.Int32},System.String,System.String,System.String)">
+            <summary>
+            <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> implementation for creating a reCAPTCHA V2 Checkbox style component and binding the response to a model property.
+            </summary>
+            <param name="htmlHelper">The <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> instance this method extends.</param>
+            <param name="expression">An expression to be evaluated against the current model.</param>
+            <param name="siteKey">Your reCAPTCHA sitekey. Get from the admin console.</param>
+            <param name="theme">The color theme of the widget.</param>
+            <param name="size">The size of the widget.</param>
+            <param name="tabIndex">The tabindex of the widget and challenge. If other elements in your page use tabindex, it should be set to make user navigation easier.</param>
+            <param name="callback">The name of your Javascript callback function, executed when the user submits a successful response. Response token will be passed to this function.</param>
+            <param name="expiredCallback">The name of your callback function, executed when the reCAPTCHA response expires and the user needs to re-verify.</param>
+            <param name="errorCallback">The name of your callback function, executed when reCAPTCHA encounters an error (usually network connectivity) and cannot continue until connectivity is restored. If you specify a function here, you are responsible for informing the user that they should retry.</param>
+            <returns>Html and script content to render and execute the reCAPTCHA V2 Checkbox.</returns>
+        </member>
         <member name="M:Finoaker.Web.Recaptcha.HtmlHelperExtensions.RecaptchaV3For``2(Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper{``0},System.Linq.Expressions.Expression{System.Func{``0,``1}},System.String,System.String,System.String,System.Boolean)">
             <summary>
             <see cref="T:Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper"/> implementation for creating a reCAPTCHA V3 component and binding the response to a model property.

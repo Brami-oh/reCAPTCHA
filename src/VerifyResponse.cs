@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace Finoaker.Web.Recaptcha
 {
+    /// <summary>
+    /// Contains response information from the reCAPTCHA Verification service.
+    /// </summary>
     [DataContract]
     public class VerifyResponse
     {
@@ -36,20 +39,20 @@ namespace Finoaker.Web.Recaptcha
         /// Any errors that were returned in verfication.
         /// </summary>
         [DataMember(Name = "error-codes")]
-        private string[] _errorCodes;
+        private string[] _errorCodes = null;
 
         /// <summary>
         /// Timestamp of the challenge load in ISO format.
         /// </summary>
         [DataMember(Name = "challenge_ts")]
-        private string _challengeTimestamp;
+        private string _challengeTimestamp = null;
 
         /// <summary>
         /// Timestamp of the challenge load.
         /// </summary>
         [IgnoreDataMember]
         public DateTime? ChallengeTimeStamp
-            => string.IsNullOrWhiteSpace(_challengeTimestamp) ? (DateTime?)null : DateTime.Parse(_challengeTimestamp, null, DateTimeStyles.RoundtripKind);
+            => string.IsNullOrEmpty(_challengeTimestamp) ? (DateTime?)null : DateTime.Parse(_challengeTimestamp, null, DateTimeStyles.RoundtripKind);
 
         /// <summary>
         /// Any errors that were returned in verification.

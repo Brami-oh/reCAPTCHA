@@ -340,6 +340,7 @@ ASALocalRun/
 healthchecksdb
 
 /samples/reCAPTCHA AspNetCore Sample/appsettings.Development.json
+/samples/reCAPTCHA AspNetCore Sample/appsettings.Production.json
 /samples/reCAPTCHA AspNetCore Sample/wwwroot/lib/
 /src/.tscache/
 /src/Finoaker.Web.Recaptcha.xml

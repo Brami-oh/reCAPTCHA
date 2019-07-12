@@ -26,21 +26,25 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
             return View(Mvc.Views.RecaptchaV2CheckboxDemo);
         }
 
-        [Route("~/V2Checkbox"), HttpPost]
+        [Route("~/V2Checkbox"), HttpPost, ValidateAntiForgeryToken]
         public IActionResult RecaptchaV2CheckboxDemo(ContactViewModel model)
         {
             // check model state first to confirm all properties, including reCAPTCHA, are valid.
             if (ModelState.IsValid)
             {
                 // verify the reCAPCTHA response against verification service
-                var verifyResult = Helpers.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V2Checkbox, _settings).Result;
-
-                ViewBag.Result = "Failed!";
+                var verifyResult = RecaptchaService.VerifyTokenAsync(model.RecaptchaResponse, RecaptchaType.V2Checkbox, _settings).Result;
+                ViewData["VerifyResponse"] = verifyResult;
+                ViewData["Name"] = model.Name;
 
                 // check success status
                 if (verifyResult.Success)
                 {
-                    ViewBag.Result = "Success!";
+                    // Success...
+                }
+                else
+                {
+                    // Failed...
                 }
             }
             return View(Mvc.Views.RecaptchaV2CheckboxDemo);
@@ -52,7 +56,7 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
             return View(Mvc.Views.RecaptchaV3Demo);
         }
 
-        [Route("~/V3"), HttpPost]
+        [Route("~/V3"), HttpPost, ValidateAntiForgeryToken]
         public IActionResult RecaptchaV3Demo(ContactViewModel model)
         {
             // check model state first to confirm all properties, including reCAPTCHA, are valid.
@@ -61,14 +65,17 @@ namespace reCAPTCHA_AspNetCore_Sample.Controllers
                 var myMinimumScore = 0.8m;
 
                 // verify the reCAPCTHA response against verification service
-                var verifyResult = Helpers.VerifyAsync(model.RecaptchaResponse, RecaptchaType.V3, _settings).Result;
-
-                ViewBag.Result = "Failed!";
+                var verifyResult = RecaptchaService.VerifyTokenAsync(model.RecaptchaResponse, RecaptchaType.V3, _settings).Result;
+                ViewData["VerifyResponse"] = verifyResult;
+                ViewData["Name"] = model.Name;
 
                 // check success status
                 if (verifyResult.Success && verifyResult.Score > myMinimumScore)
                 {
-                    ViewBag.Result = "Success!";
+                    // Success AND scored above minimum
+                } else
+                {
+                    // Failed OR scored less than minimum.
                 }
             }
             return View(Mvc.Views.RecaptchaV3Demo);

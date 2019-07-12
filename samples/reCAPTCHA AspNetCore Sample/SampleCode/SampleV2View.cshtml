@@ -1,0 +1,53 @@
+﻿@using Finoaker.Web.Recaptcha
+@using Microsoft.Extensions.Options
+@using SampleCode
+@model SampleModel
+@addTagHelper *, Finoaker.Web.Recaptcha
+@{
+    // AspNetCore retrieve settings from the ServiceCollection.
+    var settings = ((IOptions<RecaptchaSettings>)ViewContext.HttpContext.RequestServices.GetService(typeof(IOptions<RecaptchaSettings>))).Value;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Recaptcha Demo</title>
+</head>
+<body>
+    <h1>Contact Us</h1>
+    <form asp-controller="SampleV2" asp-action="RecaptchaV2CheckboxDemo" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-field-container">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" type="text" />
+        </div>
+
+        <div class="form-field-container">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" />
+        </div>
+
+        <div class="form-field-container">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" type="tel" />
+        </div>
+
+        <div class="form-field-container">
+            <label asp-for="Message"></label>
+            <input asp-for="Message" type="tel" />
+        </div>
+
+        <!-- Use either the TagHelper reCAPTCHA version... -->
+        <recaptcha-v2-checkbox asp-for="RecaptchaResponse" />
+
+        <!-- ...OR the HtmlHelper reCAPTCHA version -->
+        @Html.RecaptchaV2CheckboxFor(m => m.RecaptchaResponse, siteKey: settings.First(RecaptchaType.V2Checkbox)?.SiteKey)
+
+        <div class="form-field-container">
+            <input type="submit" />
+        </div>
+    </form>
+</body>
+</html>

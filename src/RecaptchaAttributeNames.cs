@@ -1,12 +1,15 @@
-﻿public static class RecaptchaAttributeNames
+﻿/// <summary>
+/// Html attribute names used by reCAPTCHA conponents.
+/// </summary>
+internal static class RecaptchaAttributeNames
 {
-    public const string SiteKey =           "data-sitekey";
-    public const string Size =              "data-size";
-    public const string Theme =             "data-theme";
-    public const string Action =            "data-action";
-    public const string BadgePosition =     "data-badge";
-    public const string TabIndex =          "data-tabindex";
-    public const string Callback =          "data-callback";
-    public const string ExpiredCallback =   "data-expired-callback";
-    public const string ErrorCallback =     "data-error-callback";
+    internal const string SiteKey =           "data-sitekey";
+    internal const string Size =              "data-size";
+    internal const string Theme =             "data-theme";
+    internal const string Action =            "data-action";
+    internal const string BadgePosition =     "data-badge";
+    internal const string TabIndex =          "data-tabindex";
+    internal const string Callback =          "data-callback";
+    internal const string ExpiredCallback =   "data-expired-callback";
+    internal const string ErrorCallback =     "data-error-callback";
 }

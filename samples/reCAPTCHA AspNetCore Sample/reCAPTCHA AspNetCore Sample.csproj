@@ -6,6 +6,8 @@
     <RootNamespace>reCAPTCHA_AspNetCore_Sample</RootNamespace>
     <TypeScriptToolsVersion>3.4</TypeScriptToolsVersion>
     <AssemblyName>reCAPTCHA_AspNetCore_Sample</AssemblyName>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

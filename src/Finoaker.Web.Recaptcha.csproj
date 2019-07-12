@@ -5,18 +5,20 @@
     <AssemblyName>Finoaker.Web.Recaptcha</AssemblyName>
     <RootNamespace>Finoaker.Web.Recaptcha</RootNamespace>
     <PackageId>Finoaker.Web.Recaptcha</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Ant Croaker</Authors>
     <Company>Finoaker</Company>
     <Copyright>© Finoaker. All rights reserved.</Copyright>
     <PackageTags>aspnetcore taghelper htmlhelper recaptcha netstandard20 mvc</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>A simple to use .NET Standard 2.0 library for adding reCAPTCHA widgets to ASP.NET websites. reCAPTCHA is a free service that protects sites from spam and abuse.</Description>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added documentation for intellisense to make it even easier to use. Minor bug fixes and improvements.</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/finoaker/reCAPTCHA</RepositoryUrl>
     <PackageProjectUrl>https://github.com/finoaker/reCAPTCHA</PackageProjectUrl>
     <PackageIconUrl>https://www.gstatic.com/images/icons/material/product/2x/recaptcha_48dp.png</PackageIconUrl>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

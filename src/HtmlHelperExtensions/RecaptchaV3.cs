@@ -15,7 +15,7 @@ namespace Finoaker.Web.Recaptcha
         internal const string ContainerV3CssClass = "recaptcha-v3-container";
 
         internal const string DefaultAction = "Default";
-        
+
 
         /// <summary>
         /// <see cref="IHtmlHelper"/> implementation for creating a reCAPTCHA V3 component and binding the response to a model property.
@@ -123,6 +123,7 @@ namespace Finoaker.Web.Recaptcha
 
             hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.Action, action);
             hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.SiteKey, siteKey);
+            hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.BadgeVisible, isBadgeVisible.ToString().ToLower());
             hiddenInputTag.AddCssClass(HiddenInputV3CssClass);
 
             if (!string.IsNullOrEmpty(callback))
@@ -139,15 +140,9 @@ namespace Finoaker.Web.Recaptcha
                 throw new FileNotFoundException("Embedded Javascript file not found.", EmbeddedV3ScriptFilename);
             }
 
-            var htmlContentBuilder = new HtmlContentBuilder();
-
-            htmlContentBuilder
-                .AppendHtml($"<style>.grecaptcha-badge{{visibility:{(isBadgeVisible ? "visible" : "hidden")};}}.{ContainerV3CssClass}{{display:none;}}</style>")
-                .AppendFormat(RecaptchaV3ApiScript, siteKey)
+            return new HtmlContentBuilder()
                 .AppendHtml(hiddenInputTag)
                 .AppendHtml($"<script>{script}</script>");
-
-            return htmlContentBuilder;
         }
     }
 }

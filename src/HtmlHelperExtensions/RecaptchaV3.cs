@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.IO;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -9,13 +10,9 @@ namespace Finoaker.Web.Recaptcha
 {
     public static partial class HtmlHelperExtensions
     {
-        internal const string RecaptchaV3ApiScript = "<script src=\"https://www.google.com/recaptcha/api.js?render={0}\" type=\"text/javascript\"></script>";
-        internal const string EmbeddedV3ScriptFilename = "Scripts/dist/RecaptchaV3.min.js";
-        internal const string HiddenInputV3CssClass = "recaptcha-v3-response";
-        internal const string ContainerV3CssClass = "recaptcha-v3-container";
-
-        internal const string DefaultAction = "Default";
-
+        internal const string EmbeddedV3ScriptFileName = "Scripts/dist/RecaptchaV3.min.js";
+        private const string DefaultAction = "Default";
+        private const string HiddenInputCssClass = "recaptcha-response";
 
         /// <summary>
         /// <see cref="IHtmlHelper"/> implementation for creating a reCAPTCHA V3 component and binding the response to a model property.
@@ -47,20 +44,23 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(siteKey));
             }
 
-            var hiddenInputTag = (TagBuilder)htmlHelper.HiddenFor(expression, htmlAttributes: null);
+            if (string.IsNullOrEmpty(action))
+            {
+                // Try getting reCAPTCHA action from various sources or assign default value.
+                action = HtmlHelperExtensions.GetAction(htmlHelper.ViewContext);
+            }
 
-            var container = new TagBuilder("div");
-            container.AddCssClass(ContainerV3CssClass);
-
-            container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                viewContext: htmlHelper.ViewContext,
-                hiddenInputTag: hiddenInputTag,
-                siteKey: siteKey,
-                callback: callback,
+            var hiddenInputAttributes = GenerateV3Attributes(
+                sitekey: siteKey,
                 action: action,
-                isBadgeVisible: isBadgeVisible));
+                callback: callback,
+                isBadgeVisible: isBadgeVisible);
 
-            return container;
+            var hiddenInputTag = htmlHelper.HiddenFor(expression, hiddenInputAttributes);
+
+            return new HtmlContentBuilder()
+                .AppendHtml(hiddenInputTag)
+                .AppendHtml(GenerateScriptTag(expression.Name));
         }
 
         /// <summary>
@@ -91,58 +91,95 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(siteKey));
             }
 
-            var hiddenInputTag = (TagBuilder)htmlHelper.Hidden(expression ?? "recaptcha-v3--g-recaptcha");
-
-            var container = new TagBuilder("div");
-            container.AddCssClass(ContainerV3CssClass);
-
-            container.InnerHtml.AppendHtml(GenerateHtmlContent(
-                viewContext: htmlHelper.ViewContext,
-                hiddenInputTag: hiddenInputTag,
-                siteKey: siteKey,
-                callback: callback,
-                action: action,
-                isBadgeVisible: isBadgeVisible));
-
-            return container;
-        }
-
-        internal static IHtmlContent GenerateHtmlContent(
-            ViewContext viewContext,
-            TagBuilder hiddenInputTag,
-            string siteKey,
-            string callback,
-            string action,
-            bool isBadgeVisible)
-        {
             if (string.IsNullOrEmpty(action))
             {
-                // If action attribute not assigned, use Action property of ViewBag otherwise use controller action name.
-                action = viewContext.ViewBag?.Action ?? viewContext.RouteData.Values["action"].ToString() ?? DefaultAction;
+                // Try getting reCAPTCHA action from various sources or assign default value.
+                action =  GetAction(htmlHelper.ViewContext);
             }
 
-            hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.Action, action);
-            hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.SiteKey, siteKey);
-            hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.BadgeVisible, isBadgeVisible.ToString().ToLower());
-            hiddenInputTag.AddCssClass(HiddenInputV3CssClass);
+            // set the default if not set
+            var expressionName = expression ?? "recaptcha-v3--g-recaptcha";
 
-            if (!string.IsNullOrEmpty(callback))
-            {
-                // add the data-callback attribute to the <input> element
-                hiddenInputTag.Attributes.Add(RecaptchaAttributeNames.Callback, callback);
-            }
+            var hiddenInputAttributes = GenerateV3Attributes(
+                sitekey: siteKey,
+                action: action,
+                callback: callback,
+                isBadgeVisible: isBadgeVisible);
 
-            var script = ResourceHelper
-                .GetEmbeddedResource(EmbeddedV3ScriptFilename, typeof(HtmlHelperExtensions).GetTypeInfo().Assembly);
-
-            if (script is null)
-            {
-                throw new FileNotFoundException("Embedded Javascript file not found.", EmbeddedV3ScriptFilename);
-            }
+            var hiddenInputTag = htmlHelper.Hidden(
+                expression: expressionName,
+                value: null,
+                htmlAttributes: hiddenInputAttributes);
 
             return new HtmlContentBuilder()
                 .AppendHtml(hiddenInputTag)
-                .AppendHtml($"<script>{script}</script>");
+                .AppendHtml(GenerateScriptTag(expressionName));
+        }
+
+        internal static Dictionary<string, object> GenerateV3Attributes(
+            string sitekey,
+            string callback = null,
+            string action = null,
+            bool? isBadgeVisible = null)
+        {
+            var htmlAttributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { RecaptchaAttributeNames.SiteKey, sitekey },
+                { "class", HiddenInputCssClass },
+            };
+
+            if (!string.IsNullOrEmpty(callback))
+            {
+                htmlAttributes.Add(RecaptchaAttributeNames.Callback, callback);
+            }
+
+            if (!string.IsNullOrEmpty(action))
+            {
+                htmlAttributes.Add(RecaptchaAttributeNames.Action, action);
+            }
+
+            if (isBadgeVisible.HasValue)
+            {
+                htmlAttributes.Add(RecaptchaAttributeNames.BadgeVisible, isBadgeVisible);
+            }
+
+            return htmlAttributes;
+        }
+
+        internal static string GetAction(ViewContext viewContext)
+        {
+            // If action attribute not assigned, try ViewData "Action" property 
+            // or controller action name otherwise assign a default value.
+            return viewContext.ViewData["Action"]?.ToString() ??
+                viewContext.ViewData["action"]?.ToString() ??
+                (string)viewContext.ViewBag?.Action ??
+                (string)viewContext.ViewBag?.action ??
+                viewContext.RouteData.Values["action"]?.ToString() ??
+                DefaultAction;
+        }
+
+        internal static TagBuilder GenerateScriptTag(string id)
+        {
+            // get the script file content from embedded resources
+            var script = ResourceHelper
+                .GetEmbeddedResource(
+                    EmbeddedV3ScriptFileName,
+                    typeof(HtmlHelperExtensions).GetTypeInfo().Assembly);
+
+            if (script is null)
+            {
+                throw new FileNotFoundException(
+                    "Embedded Javascript file not found.",
+                    EmbeddedV3ScriptFileName);
+            }
+
+            script = $"var recaptchaInputId=\"{id}\";{script}";
+
+            var scriptTag = new TagBuilder("script");
+
+            scriptTag.InnerHtml.AppendHtml(script);
+
+            return scriptTag;
         }
     }
 }

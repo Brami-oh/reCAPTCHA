@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 
@@ -9,23 +10,37 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
     /// <summary>
     /// <see cref="ITagHelper"/> implementation for creating a reCAPTCHA V3 component and binding the response to a model property.
     /// </summary>
-    [HtmlTargetElement(RecpatachaV3TagClassName, TagStructure = TagStructure.NormalOrSelfClosing)]
+    [Obsolete("This TagHelper is obsolete and will be removed in a future version. Use <recaptcha type=\"V3\" /> instead.")]
+    [HtmlTargetElement(RecaptchaV3TagName, TagStructure = TagStructure.WithoutEndTag)]
     public class RecaptchaV3TagHelper : TagHelper
     {
-        private const string RecpatachaV3TagClassName = "recaptcha-v3";
-        private IHtmlGenerator _generator;
-        private RecaptchaSettings _settings;
+        private const string RecaptchaV3TagName = "recaptcha-v3";
 
         /// <summary>
-        /// Constructor for <see cref="RecaptchaV3TagHelper"/>.
+        /// Creates a new <see cref="RecaptchaV3TagHelper"/>.
         /// </summary>
-        /// <param name="settings"><see cref="RecaptchaSettings"/> object that has reCAPTCHA keys from configuration.</param>
-        /// <param name="generator"><see cref="IHtmlGenerator"/> used to assist in generating Html content.</param>
-        public RecaptchaV3TagHelper(IOptions<RecaptchaSettings> settings, IHtmlGenerator generator)
+        /// <param name="settings">The <see cref="RecaptchaSettings"/> contains settings from configuration.</param>
+        /// <param name="generator">The <see cref="IHtmlGenerator"/>.</param>
+        public RecaptchaV3TagHelper(
+            IOptions<RecaptchaSettings> settings,
+            IHtmlGenerator generator)
         {
-            _settings = settings?.Value;
-            _generator = generator;
+            Settings = settings?.Value;
+            Generator = generator;
         }
+
+        /// <summary>
+        /// Gets the <see cref="RecaptchaSettings"/> that contains settings from configuration.
+        /// </summary>
+        protected RecaptchaSettings Settings { get; }
+
+        /// <summary>
+        /// Gets the <see cref="IHtmlGenerator"/> used to generate the <see cref="RecaptchaV3TagHelper"/>'s output.
+        /// </summary>
+        protected IHtmlGenerator Generator { get; }
+
+        /// <inheritdoc />
+        public override int Order => -1000;
 
         /// <summary>
         /// An expression to be evaluated against the current model.
@@ -37,18 +52,7 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         /// Your site key. Required if the site key is not in your appSettings.
         /// </summary>
         [HtmlAttributeName("sitekey")]
-        public string SiteKey
-        {
-            get
-            {
-                return _siteKey ?? _settings?.First(RecaptchaType.V3)?.SiteKey;
-            }
-            set
-            {
-                _siteKey = value;
-            }
-        }
-        private string _siteKey;
+        public string SiteKey { get; set; }
 
         /// <summary>
         /// The name of your callback function, executed when the user submits a successful response. The response token is passed to this callback.
@@ -69,7 +73,7 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         public bool IsBadgeVisible { get; set;  } = true;
 
         /// <summary>
-        /// Gets the <see cref="Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/> of the executing view.
+        /// Gets the ViewContext of the executing view.
         /// </summary>
         [HtmlAttributeNotBound]
         [ViewContext]
@@ -92,31 +96,19 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
-            if (string.IsNullOrEmpty(SiteKey))
-            {
-                throw new ArgumentNullException(nameof(SiteKey));
-            }
-
-            var hiddenInputTag = _generator.GenerateHidden(
+            var result = RecaptchaTagHelper.GenerateV3Tags(
                 ViewContext, 
-                Expression?.ModelExplorer, 
-                Expression?.Name ?? "recaptcha-v3--g-recaptcha", 
-                null, 
-                true, 
-                null);
+                Generator,
+                Settings,
+                Expression, 
+                SiteKey, 
+                Callback, 
+                Action, 
+                IsBadgeVisible);
 
-            output.Reinitialize("div", TagMode.StartTagAndEndTag);
-            output.Attributes.Add("class", HtmlHelperExtensions.ContainerV3CssClass);
-
-            output.Content.AppendHtml(
-                HtmlHelperExtensions.GenerateHtmlContent(
-                viewContext: ViewContext,
-                hiddenInputTag: hiddenInputTag,
-                siteKey: SiteKey,
-                callback: Callback,
-                action: Action,
-                isBadgeVisible: IsBadgeVisible)
-                );
+            output.Reinitialize("input", TagMode.SelfClosing);
+            output.MergeAttributes(result.HiddenInputTag);
+            output.PostElement.AppendHtml(result.ScriptTag);
         }
     }
 }

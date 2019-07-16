@@ -1,24 +1,27 @@
 ﻿// grecaptcha object is declared in reCAPTCHA api.
 declare const grecaptcha: any;
 
-(function () {
+// id of the tag that will hold the token response.
+declare const recaptchaInputId: string;
+
+(function() {
     // the reCAPTCHA <input> form element
-    const hiddenInputTag = <HTMLInputElement>document.querySelector(`body input[type=hidden].recaptcha-v3-response`);
+    const hiddenInputTag = <HTMLInputElement>document.querySelector(`body input[type=hidden]#${recaptchaInputId}`);
 
     if (hiddenInputTag && hiddenInputTag.dataset.sitekey) {
         // insert the reCAPTCHA script
-        let rScript = document.createElement(`script`);
+        let scriptTag = document.createElement(`script`);
 
-        rScript.type = `text/javascript`;
-        rScript.src = `https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaResponse&render=${hiddenInputTag.dataset.sitekey}`;
+        scriptTag.type = `text/javascript`;
+        scriptTag.src = `https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaResponse&render=${hiddenInputTag.dataset.sitekey}`;
 
-        document.body.appendChild(rScript);
+        document.body.appendChild(scriptTag);
     }
 })();
 
 function onloadRecaptchaResponse() {
     // the reCAPTCHA form hidden <input> element
-    const hiddenInputTag = <HTMLInputElement>document.querySelector(`body input[type=hidden].recaptcha-v3-response`);
+    const hiddenInputTag = <HTMLInputElement>document.querySelector(`body input[type=hidden]#${recaptchaInputId}`);
 
     if (grecaptcha &&
         typeof grecaptcha.ready == `function`) {

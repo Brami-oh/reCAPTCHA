@@ -339,8 +339,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-/samples/reCAPTCHA AspNetCore Sample/appsettings.Development.json
-/samples/reCAPTCHA AspNetCore Sample/appsettings.Production.json
-/samples/reCAPTCHA AspNetCore Sample/wwwroot/lib/
+/samples/TestApp/appsettings.Development.json
+/samples/TestApp/wwwroot/lib/
 /src/.tscache/
 /src/Finoaker.Web.Recaptcha.xml

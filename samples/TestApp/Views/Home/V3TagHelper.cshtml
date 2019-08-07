@@ -1,0 +1,47 @@
+﻿@using Finoaker.Web.Recaptcha
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model ContactViewModel
+
+<div class="text-center">
+    <h1 class="display-4">V3 TagHelper</h1>
+    <p>Test harness for the reCAPTCHA V3 TagHelper</p>
+</div>
+<div class="container-fluid">
+    <form asp-controller="Home"
+          asp-action="Index">
+
+        <div class="form-group">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" type="text" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" type="email" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Phone"></label>
+            <input asp-for="Phone" type="tel" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Message"></label>
+            <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+        </div>
+        <div class="form-group">
+            <input id="submitBtn" type="submit" class="btn btn-primary" disabled />
+        </div>
+
+        <div class="form-group" id="tokenDiv" style="display:none">
+            <label for="token">reCAPTCHA Token</label>
+            <textarea id="token" rows="5" class="form-control" readonly></textarea>
+        </div>
+
+        <recaptcha type="V3" action="Contact" for="RecaptchaResponse" callback="onSuccess" expired-callback="onExpired" />
+
+    </form>
+</div>

@@ -33,6 +33,10 @@ namespace Finoaker.Web.Recaptcha
     public class Key
     {
         /// <summary>
+        /// Default minimum score. 
+        /// </summary>
+        public const decimal DefaultMinimumScore = 0.8m;
+        /// <summary>
         /// reCAPTCHA Secret Key
         /// </summary>
         [Required]
@@ -50,5 +54,30 @@ namespace Finoaker.Web.Recaptcha
         /// </summary>
         [Required]
         public RecaptchaType KeyType { get; set; }
+
+        /// <summary>
+        /// [v3 only] Minimum score required to successfully pass verification. Score must be between 0.0 and 1.0. (Default 0.8)
+        /// </summary>
+        public decimal? MinimumScore {
+            get
+            {
+                if (KeyType == RecaptchaType.V3)
+                {
+                    return _MinimumScore ?? DefaultMinimumScore;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                if (KeyType == RecaptchaType.V3 && value >= 0.0m && value <= 1.0m)
+                {
+                    _MinimumScore = value;
+                }
+            }
+        }
+        private decimal? _MinimumScore;
     }
 }

@@ -22,7 +22,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\antho\Documents\Dev\Finoaker.Web\src\Finoaker.Web.Recaptcha.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\antho\Documents\Dev\Finoaker.Web\src\Recaptcha\src\Finoaker.Web.Recaptcha.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,12 +42,17 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Finoaker.Web.Core" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Scripts\dist\" />
   </ItemGroup>
   
 </Project>

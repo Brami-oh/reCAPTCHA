@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Finoaker.Web.Recaptcha
 {
     /// <summary>
-    /// Initializes a new instance of <see cref="RecaptchaService"/> that's used to verify a reCAPTCHA response.
+    /// Initializes a new instance of <see cref="RecaptchaService"/>.
     /// </summary>
     public class RecaptchaService : IRecaptchaService
     {
@@ -42,7 +42,7 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(secretKey));
             }
 
-            return await RecaptchaService.VerifyTokenAsync(
+            return await VerifyTokenAsync(
                 type,
                 responseToken,
                 secretKey,
@@ -80,7 +80,7 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException("SecretKey", "The secret key of the required type, is not found or null in RecaptchaSettings argument.");
             }
 
-            return await RecaptchaService.VerifyTokenAsync(
+            return await VerifyTokenAsync(
                 type,
                 responseToken,
                 settings.First(type).SecretKey,
@@ -102,7 +102,7 @@ namespace Finoaker.Web.Recaptcha
                 throw new ArgumentNullException(nameof(secretKey));
             }
 
-            return await RecaptchaService.VerifyTokenAsync(
+            return await VerifyTokenAsync(
                 type,
                 responseToken,
                 secretKey,

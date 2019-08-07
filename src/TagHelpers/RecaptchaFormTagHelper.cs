@@ -1,119 +1,75 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 
 namespace Finoaker.Web.Recaptcha.TagHelpers
 {
     /// <summary>
-    /// <see cref="ITagHelper"/> implementation targeting &lt;form&gt; element, for creating reCAPTCHA V3 component.
+    /// <see cref="ITagHelper"/> implementation targeting &lt;form&gt; element, for creating reCAPTCHA v3 component.
     /// </summary>
-    [HtmlTargetElement("form", Attributes = "recaptcha-*")]
-    public class RecaptchaFormTagHelper : TagHelper
+    [HtmlTargetElement("form", Attributes = AttributePrefix + "*")]
+    public class RecaptchaFormTagHelper : RecaptchaTagHelperBase, IRecaptchaV3TagHelper
     {
-        private const string ExpressionAttributeName = "recaptcha-for";
-        private const string SiteKeyAttributeName = "recaptcha-sitekey";
-        private const string ActionAttributeName = "recaptcha-action";
-        private const string CallbackAttributeName = "recaptcha-callback";
-        private const string BadgeVisibleAttributeName = "recaptcha-badge-visible";
-        private const string BadgePositionAttributeName = "recaptcha-badge-position";
-
-        /// <summary>
-        /// Creates a new <see cref="RecaptchaFormTagHelper"/>.
-        /// </summary>
-        /// <param name="settings">The <see cref="RecaptchaSettings"/> contains settings from configuration.</param>
-        /// <param name="generator">The <see cref="IHtmlGenerator"/>.</param>
-        public RecaptchaFormTagHelper(
-            IOptions<RecaptchaSettings> settings, 
-            IHtmlGenerator generator)
-        {
-            Settings = settings?.Value;
-            Generator = generator;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="RecaptchaSettings"/> that contains settings from configuration.
-        /// </summary>
-        protected RecaptchaSettings Settings { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IHtmlGenerator"/> used to generate the <see cref="RecaptchaFormTagHelper"/>'s output.
-        /// </summary>
-        protected IHtmlGenerator Generator { get; }
-
-        /// <inheritdoc />
-        public override int Order => -1000;
+        private const string AttributePrefix = "recaptcha-";
 
         /// <summary>
         /// An expression to be evaluated against the current model.
         /// </summary>
-        [HtmlAttributeName(ExpressionAttributeName)]
+        [HtmlAttributeName(AttributePrefix + ExpressionAttributeName)]
         public ModelExpression For { get; set; }
 
         /// <summary>
-        /// Your site key. Required if site key is not stored in configuration.
+        /// Unique Id for hidden &lt;input&gt; element that holds reCAPTCHA challenge response. Ignored if <see cref="For" /> property is provided.
         /// </summary>
-        /// <remarks>
-        /// Cannot be <c>null</c> if keys are not in configuration settings.
-        /// </remarks>
-        [HtmlAttributeName(SiteKeyAttributeName)]
+        [HtmlAttributeName(AttributePrefix + IdAttributeName)]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Your sites unique reCAPTCHA site key. Required if the site key is not provided in configuration.
+        /// </summary>
+        /// <remarks>Site key supplied through TagHelper attribute takes precedence.</remarks>
+        [HtmlAttributeName(AttributePrefix + SiteKeyAttributeName)]
         public string SiteKey { get; set; }
 
         /// <summary>
-        /// Name that the reCAPTCHA service uses to provide a data break-down and adaptive risk analysis. 
+        /// Term that reCAPTCHA service uses to provide a data break-down and adaptive risk analysis.
         /// </summary>
-        [HtmlAttributeName(ActionAttributeName)]
+        [HtmlAttributeName(AttributePrefix + ActionAttributeName)]
         public string Action { get; set; }
 
         /// <summary>
-        /// Name of a Javascript function to be executed on successful response. The response token is passed to this function.
+        /// Javascript function to be executed after a successful reCAPTCHA challenge response is recieved. The response token is passed as an argument.
         /// </summary>
-        [HtmlAttributeName(CallbackAttributeName)]
+        [HtmlAttributeName(AttributePrefix + CallbackAttributeName)]
         public string Callback { get; set; }
 
         /// <summary>
-        /// Controls visibility of the reCAPTCHA badge.
+        /// Controls position and visibility of the reCAPTCHA badge on the page.
         /// </summary>
-        [HtmlAttributeName(BadgeVisibleAttributeName)]
-        public bool IsBadgeVisible { get; set; } = true;
+        [HtmlAttributeName(AttributePrefix + BadgeAttributeName)]
+        public BadgeType? Badge { get; set; }
 
         /// <summary>
-        /// Gets the ViewContext of the executing view.
+        /// Synchronously executes the <see cref="RecaptchaTagHelper"/> with the given context and output.
         /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
-
-        /// <inheritdoc />
         /// <exception cref="ArgumentNullException">
-        /// Thrown if <see cref="SiteKey"/> attribute is null or empty and a key cannot be found in configuration settings.
+        /// Thrown if <see cref="SiteKey" /> property / attribute is null or empty and a key cannot be found in configuration settings.
         /// </exception>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (context is null)
+            var tagHelper = new RecaptchaTagHelper()
             {
-                throw new ArgumentNullException(nameof(context));
-            }
+                Callback = Callback,
+                For = For,
+                SiteKey = SiteKey,
+                Type = RecaptchaType.V3,
+                ViewContext = ViewContext,
+                Action = Action,
+                Badge = Badge
+            };
 
-            if (output is null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
-
-            var result = RecaptchaTagHelper.GenerateV3Tags(
-                ViewContext,
-                Generator,
-                Settings,
-                For,
-                SiteKey,
-                Callback,
-                Action,
-                IsBadgeVisible);
-
-            // Append to the end of the form
-            output.PostContent.AppendHtml(result.HiddenInputTag);
-            output.PostContent.AppendHtml(result.ScriptTag);
+            // recAPTCHA Html and script is appended to the end of the form. Rest of the form is unchanged.
+            output.PostContent.AppendHtml(tagHelper.GenerateHtml());
         }
     }
 }

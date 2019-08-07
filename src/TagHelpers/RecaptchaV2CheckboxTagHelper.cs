@@ -1,143 +1,90 @@
 ﻿using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Finoaker.Web.Recaptcha.TagHelpers
 {
     /// <summary>
-    /// <see cref="ITagHelper"/> implementation for creating a reCAPTCHA version 2 Checkbox component. 
+    /// [deprecated] <see cref="ITagHelper"/> implementation for creating a reCAPTCHA version 2 Checkbox component. Use 
     /// </summary>
-    [HtmlTargetElement("div", Attributes = "[class=" + RecpatachaV2CheckboxTagClassName + "]", TagStructure = TagStructure.NormalOrSelfClosing)]
-    [HtmlTargetElement(RecpatachaV2CheckboxTagClassName, TagStructure = TagStructure.NormalOrSelfClosing)]
-    public class RecaptchaV2CheckboxTagHelper : TagHelper
+    [Obsolete("This TagHelper is obsolete and will be removed in a future version. Use <recaptcha type=\"V2Checkbox\" /> instead.")]
+    [HtmlTargetElement("recaptcha-v2-checkbox", TagStructure = TagStructure.WithoutEndTag)]
+    public class RecaptchaV2CheckboxTagHelper : RecaptchaTagHelperBase, IRecaptchaV2CheckboxTagHelper
     {
-        private const string RecpatachaV2CheckboxTagClassName = "recaptcha-v2-checkbox";
-
-        private IHtmlGenerator _generator;
-        private RecaptchaSettings _settings;
-
         /// <summary>
-        /// Constructor for <see cref="RecaptchaV2CheckboxTagHelper"/>.
+        /// [deprecated] An expression to be evaluated against the current model.
         /// </summary>
-        /// <param name="settings"><see cref="RecaptchaSettings"/> object that has reCAPTCHA keys from configuration.</param>
-        /// <param name="generator"><see cref="IHtmlGenerator"/> used to assist in generating Html content.</param>
-        public RecaptchaV2CheckboxTagHelper(IOptions<RecaptchaSettings> settings, IHtmlGenerator generator)
-        {
-            _settings = settings?.Value;
-            _generator = generator;
-        }
+        [HtmlAttributeName(ObsoleteExpressionAttributeName)]
+        [Obsolete("This property is obsolete and will be removed in a future version.")]
+        public ModelExpression For2 { get => For; set => For = For ?? value; }
 
         /// <summary>
         /// An expression to be evaluated against the current model.
         /// </summary>
-        [HtmlAttributeName("asp-for")]
-        public ModelExpression Expression { get; set; }
+        [HtmlAttributeName(ExpressionAttributeName)]
+        public ModelExpression For { get; set; }
 
         /// <summary>
-        /// Your site key. Required if the site key is not in provided through appSettings.
+        /// Your sites unique reCAPTCHA site key. Required if the site key is not provided in configuration.
         /// </summary>
-        [HtmlAttributeName("sitekey")]
-        public string SiteKey
-        {
-            get
-            {
-                return _siteKey ?? _settings?.First(RecaptchaType.V2Checkbox)?.SiteKey;
-            }
-            set
-            {
-                _siteKey = value;
-            }
-        }
-        private string _siteKey;
+        /// <remarks>Site key supplied through TagHelper attribute takes precedence.</remarks>
+        [HtmlAttributeName(SiteKeyAttributeName)]
+        public string SiteKey { get; set; }
 
         /// <summary>
         /// The color theme of the widget.
         /// </summary>
-        [HtmlAttributeName("theme")]
-        public Theme? Theme { get; set; }
+        [HtmlAttributeName(ThemeAttributeName)]
+        public ThemeType? Theme { get; set; }
 
         /// <summary>
         /// The size of the widget.
         /// </summary>
-        [HtmlAttributeName("size")]
-        public Size? Size { get; set; }
+        [HtmlAttributeName(SizeAttributeName)]
+        public SizeType? Size { get; set; }
 
         /// <summary>
-        /// The tabindex of the widget and challenge. If other elements in your page use tabindex, it should be set to make user navigation easier.
+        /// The tabindex of the widget and challenge.
         /// </summary>
-        [HtmlAttributeName("tabindex")]
+        [HtmlAttributeName(TabIndexAttributeName)]
         public int? TabIndex { get; set; }
 
         /// <summary>
-        /// The name of your callback function, executed when the user submits a successful response. The response token is passed to this callback.
+        /// Javascript function to be executed after a successful reCAPTCHA challenge response is recieved. The response token is passed as an argument.
         /// </summary>
-        [HtmlAttributeName("callback")]
+        [HtmlAttributeName(CallbackAttributeName)]
         public string Callback { get; set; }
 
         /// <summary>
-        /// The name of your callback function, executed when the reCAPTCHA response expires and the user needs to re-verify.
+        /// Javascript function to be executed when the reCAPTCHA response expires.
         /// </summary>
-        [HtmlAttributeName("expired-callback")]
+        [HtmlAttributeName(ExpiredCallbackAttributeName)]
         public string ExpiredCallback { get; set; }
 
         /// <summary>
-        /// The name of your callback function, executed when reCAPTCHA encounters an error (usually network connectivity) and cannot continue until connectivity is restored. If you specify a function here, you are responsible for informing the user that they should retry.
+        /// Javascript function to be executed when the reCAPTCHA response encounters an error.
         /// </summary>
-        [HtmlAttributeName("error-callback")]
+        [HtmlAttributeName(ErrorCallbackAttributeName)]
         public string ErrorCallback { get; set; }
 
-        /// <summary>
-        /// Gets the <see cref="Microsoft.AspNetCore.Mvc.Rendering.ViewContext"/> of the executing view.
-        /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
-
-        /// <summary>
-        /// Synchronously executes the <see cref="RecaptchaV2CheckboxTagHelper"/> with the given context and output.
-        /// </summary>
-        /// <param name="context">Contains information associated with the current HTML tag.</param>
-        /// <param name="output">A stateful HTML element used to generate an HTML tag.</param>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (context is null)
+            var tagHelper = new RecaptchaTagHelper()
             {
-                throw new ArgumentNullException(nameof(context));
-            }
+                Callback = Callback,
+                ErrorCallback = ErrorCallback,
+                ExpiredCallback = ExpiredCallback,
+                For = For,
+                SiteKey = SiteKey,
+                Size = Size,
+                TabIndex = TabIndex,
+                Theme = Theme,
+                Type = RecaptchaType.V2Checkbox,
+                ViewContext = ViewContext
+            };
 
-            if (output is null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
-
-            if (string.IsNullOrEmpty(SiteKey))
-            {
-                throw new ArgumentNullException(nameof(SiteKey));
-            }
-
-            output.Reinitialize("div", TagMode.StartTagAndEndTag);
-            output.Attributes.SetAttribute("class", HtmlHelperExtensions.ContainerV2CssClass);
-
-            var hiddenInputTag = _generator.GenerateHidden(
-                ViewContext, 
-                Expression?.ModelExplorer, 
-                Expression?.Name ?? "recaptcha-v2--g-recaptcha", 
-                null, 
-                true, 
-                null);
-
-            output.Content.AppendHtml(HtmlHelperExtensions.GenerateHtmlContent(
-                hiddenInputTag: hiddenInputTag,
-                siteKey: SiteKey,
-                theme: Theme,
-                size: Size,
-                tabIndex: TabIndex,
-                callback: Callback,
-                expiredCallback: ExpiredCallback,
-                errorCallback: ErrorCallback)
-                );
+            // The RecaptchaTagHelper produces the required Html output.
+            tagHelper.Process(context, output);
         }
     }
 }

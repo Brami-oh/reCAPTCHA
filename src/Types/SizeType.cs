@@ -3,16 +3,21 @@
     /// <summary>
     /// The size of the reCAPTCHA checkbox component.
     /// </summary>
-    public enum Size
+    public enum SizeType
     {
+        /// <summary>
+        /// (Default) Standard reCAPTCHA checkbox component size.
+        /// </summary>
+        Normal,
+
         /// <summary>
         /// Smaller version of the checkbox component.
         /// </summary>
         Compact,
 
         /// <summary>
-        /// Standard reCAPTCHA checkbox component size (Default).
+        /// Used for V3 only.
         /// </summary>
-        Normal
+        Invisible
     }
 }

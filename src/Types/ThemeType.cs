@@ -3,7 +3,7 @@
     /// <summary>
     /// The color theme of the reCAPTCHA checkbox component.
     /// </summary>
-    public enum Theme
+    public enum ThemeType
     {
         /// <summary>
         /// Dark.
@@ -11,7 +11,7 @@
         Dark,
 
         /// <summary>
-        /// Light (Default).
+        /// (Default) Light.
         /// </summary>
         Light
     }

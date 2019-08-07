@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Finoaker.Web.Recaptcha
+﻿namespace Finoaker.Web.Recaptcha
 {
     /// <summary>
     /// The type of reCAPTCHA component.

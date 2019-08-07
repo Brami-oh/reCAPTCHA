@@ -2,35 +2,28 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         ts: {
-            scripts: {
-                src: ["scripts/*.ts"],
-                options: {
-                    comments: false,
-                    sourceMap: false,
-                    target: "es5"
-                }
+            default: {
+                tsconfig: "Scripts/tsconfig.json"
             }
-        },
-        jshint: {
-            scripts: ["scripts/*.js"]
         },
         uglify: {
             scripts: {
                 files: {
-                    "scripts/dist/RecaptchaV2Checkbox.min.js": ["scripts/RecaptchaV2Checkbox.js"],
-                    "scripts/dist/RecaptchaV3.min.js": ["scripts/RecaptchaV3.js"]
+                    "Scripts/dist/recaptcha.min.js": [
+                        "Scripts/RecaptchaType.js",
+                        "Scripts/Recaptcha.js"
+                    ],
                 }
             }
         },
         clean: {
-            js: ["scripts/*.js"]
+            js: ["Scripts/*.js"]
         }
     });
 
     grunt.loadNpmTasks("grunt-ts");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-clean");
 
-    grunt.registerTask("default", ["ts", "jshint", "uglify", "clean"]);
+    grunt.registerTask("default", ["ts", "uglify", "clean"]);
 };

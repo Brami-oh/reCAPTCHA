@@ -4,54 +4,27 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
+using Finoaker.Web.Core;
 
 namespace Finoaker.Web.Recaptcha.TagHelpers
 {
     /// <summary>
     /// <see cref="ITagHelper"/> implementation for creating reCAPTCHA components.
     /// </summary>
-    [HtmlTargetElement(RecaptchaTagName, Attributes = TypeAttributeName, TagStructure = TagStructure.WithoutEndTag)]
-    public class RecaptchaTagHelper : TagHelper
+    [HtmlTargetElement("recaptcha", Attributes = TypeAttributeName, TagStructure = TagStructure.WithoutEndTag)]
+    public class RecaptchaTagHelper : RecaptchaTagHelperBase, IRecaptchaV3TagHelper, IRecaptchaV2CheckboxTagHelper
     {
-        private const string RecaptchaTagName = "recaptcha";
-        private const string TypeAttributeName = "type";
-        private const string ExpressionAttributeName = "for";
-        private const string SiteKeyAttributeName = "sitekey";
-        private const string ActionAttributeName = "action";
-        private const string SizeAttributeName = "size";
-        private const string ThemeAttributeName = "theme";
-        private const string TabIndexAttributeName = "tabindex";
-        private const string CallbackAttributeName = "callback";
-        private const string ExpiredCallbackAttributeName = "expired-callback";
-        private const string ErrorCallbackAttributeName = "error-callback";
-        private const string BadgeVisibleAttributeName = "badge-visible";
-        private const string BadgePositionAttributeName = "badge-position";
-
         /// <summary>
-        /// Creates a new <see cref="RecaptchaTagHelper"/>.
+        /// Gets the <see cref="RecaptchaSettings"/> that holds settings from confirguation.
         /// </summary>
-        /// <param name="settings">The <see cref="RecaptchaSettings"/> contains settings from configuration.</param>
-        /// <param name="generator">The <see cref="IHtmlGenerator"/>.</param>
-        public RecaptchaTagHelper(
-            IOptions<RecaptchaSettings> settings,
-            IHtmlGenerator generator)
-        {
-            Settings = settings?.Value;
-            Generator = generator;
-        }
-
-        /// <summary>
-        /// Gets the <see cref="RecaptchaSettings"/> that contains settings from configuration.
-        /// </summary>
-        protected RecaptchaSettings Settings { get; }
+        public RecaptchaSettings Settings
+            => ((IOptions<RecaptchaSettings>)ViewContext.HttpContext.RequestServices.GetService(typeof(IOptions<RecaptchaSettings>)))?.Value;
 
         /// <summary>
         /// Gets the <see cref="IHtmlGenerator"/> used to generate the <see cref="RecaptchaTagHelper"/>'s output.
         /// </summary>
-        protected IHtmlGenerator Generator { get; }
-
-        /// <inheritdoc />
-        public override int Order => -1000;
+        public IHtmlGenerator Generator
+            => (IHtmlGenerator)ViewContext.HttpContext.RequestServices.GetService(typeof(IHtmlGenerator));
 
         /// <summary>
         /// An expression to be evaluated against the current model.
@@ -60,80 +33,87 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
         public ModelExpression For { get; set; }
 
         /// <summary>
+        /// Unique Id for hidden &lt;input&gt; element that holds reCAPTCHA challenge response. Ignored if <see cref="For" /> property is provided.
+        /// </summary>
+        [HtmlAttributeName(IdAttributeName)]
+        public string Id { get; set; }
+
+        /// <summary>
         /// Type of reCAPTCHA to be used eg. v2 Checkbox, v3
         /// </summary>
         [HtmlAttributeName(TypeAttributeName)]
         public RecaptchaType Type { get; set; }
 
         /// <summary>
-        /// Your site key. Required if site key is not stored in configuration.
+        /// Your sites unique reCAPTCHA site key. Required if the site key is not provided in configuration.
         /// </summary>
-        /// <remarks>
-        /// Cannot be <c>null</c> if keys are not in configuration settings.
-        /// </remarks>
+        /// <remarks>Site key supplied through TagHelper attribute takes precedence.</remarks>
         [HtmlAttributeName(SiteKeyAttributeName)]
         public string SiteKey { get; set; }
 
         /// <summary>
-        /// Name that the reCAPTCHA service uses to provide a data break-down and adaptive risk analysis. 
+        /// [v3 only] Term that reCAPTCHA service uses to provide a data break-down and adaptive risk analysis.
         /// </summary>
+        /// <remarks>v3 only. Ignored for all other types.</remarks>
         [HtmlAttributeName(ActionAttributeName)]
         public string Action { get; set; }
 
         /// <summary>
-        /// Name of a Javascript function to be executed on successful response. The response token is passed to this function.
+        /// Javascript function to be executed after a successful reCAPTCHA challenge response is recieved. The response token is passed as an argument.
         /// </summary>
         [HtmlAttributeName(CallbackAttributeName)]
         public string Callback { get; set; }
 
         /// <summary>
-        /// Controls visibility of the reCAPTCHA badge.
+        /// [v3 only] Controls position and visibility of the reCAPTCHA badge on the page.
         /// </summary>
-        /// <remarks>V3 only.</remarks>
-        [HtmlAttributeName(BadgeVisibleAttributeName)]
-        public bool? IsBadgeVisible { get; set; }
+        /// <remarks>v3 only. Ignored for all other types.</remarks>
+        [HtmlAttributeName(BadgeAttributeName)]
+        public BadgeType? Badge { get; set; }
 
         /// <summary>
-        /// The color theme of the widget.
+        /// [v2 checkbox only] The color theme of the widget.
         /// </summary>
-        /// <remarks>V2 checkbox only.</remarks>
+        /// <remarks>v2 checkbox only. Ignored for all other types.</remarks>
         [HtmlAttributeName(ThemeAttributeName)]
-        public Theme? Theme { get; set; }
+        public ThemeType? Theme { get; set; }
 
         /// <summary>
-        /// The size of the widget.
+        /// [v2 checkbox only] The size of the widget.
         /// </summary>
+        /// <remarks>v2 checkbox only. Ignored for all other types.</remarks>
         [HtmlAttributeName(SizeAttributeName)]
-        public Size? Size { get; set; }
+        public SizeType? Size { get; set; }
 
         /// <summary>
-        /// The tabindex of the widget and challenge. If other elements in your page use tabindex, it should be set to make user navigation easier.
+        /// [v2 checkbox only] The tabindex of the widget and challenge.
         /// </summary>
+        /// <remarks>v2 checkbox only. Ignored for all other types.</remarks>
         [HtmlAttributeName(TabIndexAttributeName)]
         public int? TabIndex { get; set; }
 
         /// <summary>
-        /// The name of your callback function, executed when the reCAPTCHA response expires and the user needs to re-verify.
+        /// [v2 checkbox only] Javascript function to be executed when the reCAPTCHA response expires.
         /// </summary>
+        /// <remarks>v2 checkbox only. Ignored for all other types.</remarks>
         [HtmlAttributeName(ExpiredCallbackAttributeName)]
         public string ExpiredCallback { get; set; }
 
         /// <summary>
-        /// The name of your callback function, executed when reCAPTCHA encounters an error (usually network connectivity) and cannot continue until connectivity is restored. If you specify a function here, you are responsible for informing the user that they should retry.
+        /// [v2 checkbox only] Javascript function to be executed when the reCAPTCHA response encounters an error.
         /// </summary>
+        /// <remarks>
+        /// v2 checkbox only. Ignored for all other types.
+        /// Usually related to network connectivity. If a function is specified here, you are responsible for informing the user they should retry.
+        /// </remarks>
         [HtmlAttributeName(ErrorCallbackAttributeName)]
         public string ErrorCallback { get; set; }
 
         /// <summary>
-        /// Gets the ViewContext of the executing view.
+        /// Synchronously executes the <see cref="RecaptchaTagHelper"/> with the given context and output.
         /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
-
-        /// <inheritdoc />
         /// <exception cref="ArgumentNullException">
-        /// Thrown if <see cref="SiteKey"/> attribute is null or empty and a key cannot be found in configuration settings.
+        /// Thrown if <see cref="SiteKey"/> property / attribute is null or empty and a key cannot be found in configuration settings.
         /// </exception>
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
@@ -147,133 +127,47 @@ namespace Finoaker.Web.Recaptcha.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
-            RecaptchaTags result = null;
+            var tagBuilder = GenerateHtml();
 
-            switch (Type)
-            {
-                case RecaptchaType.V2Checkbox:
-                    result = GenerateV2CheckboxTags(
-                        output,
-                        ViewContext,
-                        Generator,
-                        For,
-                        SiteKey,
-                        Callback,
-                        ExpiredCallback,
-                        ErrorCallback,
-                        Size,
-                        Theme,
-                        TabIndex);
-                    break;
-
-                case RecaptchaType.V3:
-                    result = GenerateV3Tags(
-                        ViewContext,
-                        Generator,
-                        Settings,
-                        For,
-                        SiteKey,
-                        Callback,
-                        Action,
-                        IsBadgeVisible);
-                    break;
-
-                default:
-                    throw new NotImplementedException("Chosen reCAPTCHA type is not supported.");
-            }
-
-            output.Reinitialize("input", TagMode.SelfClosing);
-            output.MergeAttributes(result.HiddenInputTag);
-            output.PostElement.AppendHtml(result.ScriptTag);
+            output.Reinitialize(tagBuilder.TagName, TagMode.StartTagAndEndTag);
+            output.MergeAttributes(tagBuilder);
+            output.Content.AppendHtml(tagBuilder.InnerHtml);
         }
 
-        internal static RecaptchaTags GenerateV2CheckboxTags(
-            TagHelperOutput output,
-            ViewContext viewContext,
-            IHtmlGenerator generator,
-            ModelExpression expression,
-            string sitekey,
-            string callback,
-            string expiredCallback,
-            string errorCallback,
-            Size? size,
-            Theme? theme,
-            int? tabIndex)
+        internal TagBuilder GenerateHtml()
         {
-            if (string.IsNullOrEmpty(sitekey))
+            if (Generator is null)
             {
-                throw new ArgumentNullException(nameof(sitekey));
+                throw new ArgumentNullException(nameof(Generator));
             }
 
-            if (sitekey.Trim().Length != 40)
+            TagBuilder input = null;
+
+            if (For != null || !string.IsNullOrWhiteSpace(Id))
             {
-                throw new ArgumentException("Site Key must be 40 characters long.", nameof(sitekey));
+                // Generate an <input> element using Model or Id property details. 
+                input = Generator.GenerateHidden(
+                    ViewContext,
+                    For?.ModelExplorer,
+                    For?.Name ?? Id,
+                    null,
+                    true,
+                    null);
             }
 
-            var htmlAttributes = HtmlHelperExtensions.GenerateV2CheckboxAttributes(
-                sitekey,
-                callback,
-                expiredCallback: expiredCallback,
-                errorCallback: errorCallback,
-                theme: theme,
-                size: size,
-                tabIndex: tabIndex);
+            var props = new RecaptchaProps(
+                Type,
+                SiteKey.TrimToNull() ?? Settings?.First(Type)?.SiteKey,
+                callback: Callback,
+                expiredCallback: ExpiredCallback,
+                errorCallback: ErrorCallback,
+                theme: Theme,
+                tabIndex: TabIndex,
+                size: Size,
+                badge: Badge,
+                action: Action);
 
-            throw new NotImplementedException();
-        }
-
-        internal static RecaptchaTags GenerateV3Tags(
-            ViewContext viewContext,
-            IHtmlGenerator generator,
-            RecaptchaSettings settings,
-            ModelExpression expression,
-            string sitekey,
-            string callback,
-            string action,
-            bool? isBadgeVisible)
-        {
-            sitekey = string.IsNullOrEmpty(sitekey) ? settings?.First(RecaptchaType.V3)?.SiteKey.Trim() : sitekey?.Trim();
-            if (string.IsNullOrEmpty(sitekey))
-            {
-                throw new ArgumentNullException(nameof(sitekey));
-            }
-
-            if (sitekey.Trim().Length != 40)
-            {
-                throw new ArgumentException("Site Key must be 40 characters long.", nameof(sitekey));
-            }
-
-            if (string.IsNullOrEmpty(action))
-            {
-                // Try getting reCAPTCHA action from various sources or assign default value.
-                action = HtmlHelperExtensions.GetAction(viewContext);
-            }
-
-            // default to true of not set
-            isBadgeVisible = isBadgeVisible ?? true;
-
-            // default tag name / id if model property not set
-            var expressionName = expression?.Name ?? "recaptcha-v3--g-recaptcha";
-
-            var hiddenInputAttributes = HtmlHelperExtensions.GenerateV3Attributes(
-                sitekey: sitekey,
-                action: action,
-                callback: callback,
-                isBadgeVisible: isBadgeVisible.Value);
-
-            var hiddenInputTag = generator.GenerateHidden(
-                viewContext: viewContext,
-                modelExplorer: expression?.ModelExplorer,
-                expression: expressionName,
-                value: null,
-                useViewData: true,
-                htmlAttributes: hiddenInputAttributes);
-
-            return new RecaptchaTags
-            {
-                HiddenInputTag = hiddenInputTag,
-                ScriptTag = HtmlHelperExtensions.GenerateScriptTag(expressionName)
-            };
+            return props.GenerateHtml(input);
         }
     }
 }

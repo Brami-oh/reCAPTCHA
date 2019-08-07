@@ -6,7 +6,7 @@ using System.Linq;
 namespace Finoaker.Web.Recaptcha
 {
     /// <summary>
-    /// Contains response information from the reCAPTCHA Verification service.
+    /// reCAPTCHA verification service response.
     /// </summary>
     [DataContract]
     public class VerifyResponse

@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <Authors>Ant Croaker</Authors>
+    <Company>Finoaker</Company>
+    <Product>Finoaker.Web.Recaptcha</Product>
+    <Description>A web app to test the Finoaker.Web.Recaptcha components.</Description>
+    <Copyright>© Finoaker. All rights reserved.</Copyright>
   </PropertyGroup>
 
 

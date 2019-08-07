@@ -5,7 +5,7 @@
     <AssemblyName>Finoaker.Web.Recaptcha</AssemblyName>
     <RootNamespace>Finoaker.Web.Recaptcha</RootNamespace>
     <PackageId>Finoaker.Web.Recaptcha</PackageId>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Authors>Ant Croaker</Authors>
     <Company>Finoaker</Company>
     <Copyright>© Finoaker. All rights reserved.</Copyright>
@@ -17,8 +17,8 @@
     <RepositoryUrl>https://github.com/finoaker/reCAPTCHA</RepositoryUrl>
     <PackageProjectUrl>https://github.com/finoaker/reCAPTCHA</PackageProjectUrl>
     <PackageIconUrl>https://www.gstatic.com/images/icons/material/product/2x/recaptcha_48dp.png</PackageIconUrl>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
